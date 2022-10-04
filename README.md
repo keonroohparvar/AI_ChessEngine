@@ -6,6 +6,7 @@ This repository contains all of the implementation for the SPD Chess AI model.
 
 The folder structure is described below:
 
+```
 .
 ├── README.md                   # This file
 ├── RL_model                    # Folder that contains AI development
@@ -14,6 +15,7 @@ The folder structure is described below:
 │   └── train_model.py          # The file that has our model play against itself
 ├── board.py                    # The Chess board implementation
 └── requirements.txt            # File detailing how to get setup
+```
 
 ## Setup
 

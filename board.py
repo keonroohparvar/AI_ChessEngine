@@ -1,7 +1,7 @@
 # this is the base code for the board and pieces
 
 
-class King(): # add a paramter for color
+class King():
     def __init__(self, name, value, moves_list, position, color):
         self.name = name
         self.value = value
@@ -100,10 +100,69 @@ class Pawn():
         position = self.position # where the piece is will be places in position
         if (self.color == 1): # if the piece is white
             # check forward
-            if (position[0] > 0 or position[1] <= 7):  # see if piece is on border
-                if(board[position[0]+1][position[1]] == 0):  # check one space in front and see if empty
-                    move = [position[0]+1, position[1]]
+            if (position[0]== 6): # if white pawn is in starting position
+                move = [position[0]-1, position[1]]  # move one forward is added to the moves_list
+                moves_list.append(move)
+                move = [position[0]-2, position[1]]  # move two forward is added to moves_list
+                moves_list.append(move)
+
+            elif (position[0] > 0 and position[1] <= 7):  # see if piece is able to move forward
+                if(board[position[0]-1][position[1]] == 0):  # check one space in front and see if empty
+                    move = [position[0]-1, position[1]] # if space in front is empty add the move to the moves list
                     moves_list.append(move)
+            # check front right diagonal
+            if (position[0] > 0 and position[1] < 7): # if the piece is able to move forward and to the right
+                if (board[position[0] - 1][position[1] + 1] == 0):  # if a piece is not at diagonal pawn cannot take it
+                    pass
+                elif(board[position[0] - 1][position[1] + 1].color == 2):
+                    # if the piece on the front right is a black piece
+                    move = [position[0]-1, position[1]+1]
+                    moves_list.append(move)
+            # check front left diagonal
+            if (position[0] > 0 and position[1] > 0): # see if the piece is able to move forwards and to the left
+                if (board[position[0] - 1][position[1] - 1] == 0):  # if a piece is not at diagonal pawn cannot take it
+                    pass
+                elif (board[position[0] - 1][position[1] - 1].color == 2):
+                    # if the piece on the front left is black
+                    move = [position[0]-1, position[1]-1]
+                    moves_list.append(move)
+
+        elif(self.color == 2):
+            # if in starting position have 2 options to move forward
+            if (position[0]==1):
+                move = [position[0] + 1, position[1]]  # move one forward is added to the moves_list
+                moves_list.append(move)
+                move = [position[0] + 2, position[1]]  # move two forward is added to moves_list
+                moves_list.append(move)
+            # check forward
+            elif (position[0] < 7 and position[1] <= 7):  # see if piece is able to move forward
+                if(board[position[0]+1][position[1]] == 0):  # check one space in front and see if empty
+                    move = [position[0]+1, position[1]] # if space in front is empty add the move to the moves list
+                    moves_list.append(move)
+            # check moving forward and to the right
+            if (position[0] < 7 and position[1] < 7): # if the piece is able to move forward and to the right
+                if(board[position[0] + 1][position[1] + 1] == 0): # if a piece is not at diagonal pawn cannot take it
+                    pass
+                elif(board[position[0] + 1][position[1] + 1].color == 1):
+                    # if the piece on the front right is a white piece
+                    move = [position[0]+1, position[1]+1]
+                    moves_list.append(move)
+            if (position[0] < 7 and position[1] > 0): # see if the piece is able to move forwards and to the left
+                if (board[position[0] + 1][position[1] - 1] == 0): # if piece is not at diagonal pawn cannot go there
+                    pass
+                elif (board[position[0] + 1][position[1] - 1].color == 1):
+                    # if the piece on the front left is black
+                    move = [position[0]+1, position[1]-1]
+                    moves_list.append(move)
+
+        else:
+            print("piece is not white or black, thus error")
+
+        return moves_list
+
+
+
+
 
 
 
@@ -187,10 +246,5 @@ def populate_board(all_pieces, board):
 all_pieces = create_all_pieces()
 populate_board(all_pieces, ChessBoard)
 
-print(type(ChessBoard[6][0]))
-print(ChessBoard[6][0].color)
-print(ChessBoard[6][0].name)
-print()
-
-ChessBoard[6][0].find_moves
-# WP1.find_moves()
+possible_moves = ChessBoard[1][1].find_moves(ChessBoard)
+print(possible_moves)

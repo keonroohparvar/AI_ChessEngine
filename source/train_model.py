@@ -9,3 +9,13 @@ Author: Keon Roohparvar
 Date: 11/3/2022
 """
 
+# Python Imports
+import os
+import sys
+import tensorflow as tf
+import numpy as np
+
+
+# Local Imports
+from model_architecture import ChessAIModel
+

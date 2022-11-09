@@ -7,12 +7,25 @@ Date: 11/3/2022
 """
 
 # Keon
-def download_games_from_lichess(url):
+def pull_only_stockfish_games(in_filepath, out_filepath):
     """
-    This will download games from lichess, save them locally, and format them into a .csv file.
+    This will parse the downloaded file and get the game strings from it.
     """
-    pass
+    with open(out_filepath, 'w') as fw:
+        with open(in_filepath, 'r') as fr:
+            for line in fr:
+                if line[0] == '1' and ('eval' in line):
+                    fw.write(line)
 
+# Keon
+def pull_all_games(filepath):
+    """
+    This function will pull all games from our database of games and return them as an array of strings.
+    """
+    with open(filepath, 'r') as f:
+        return f.readlines()
+
+# Max C.
 def parse_game_string_to_list(game_string):
     """
     This converts a game string in the format below to a list of moves.
@@ -28,6 +41,7 @@ def parse_game_string_to_list(game_string):
     """
     pass
 
+# Jeremy
 def convert_game_to_pos_encodings(move_list):
     """
     This function will be used to convert our move lists to data we can actually use. It will do 
@@ -49,6 +63,7 @@ def convert_game_to_pos_encodings(move_list):
     """
     pass
 
+# Devon
 def save_move_list_to_csv(move_list, data_filepath):
     """
     This will save the list 'move_list' as a lot of new data points in the csv file located
@@ -62,3 +77,12 @@ def save_move_list_to_csv(move_list, data_filepath):
         None
     """
     pass
+
+if __name__ == '__main__':
+    # Get All Games
+    games = pull_all_games('games.txt')
+
+    print(f"Here is an example game: \n{games[0]}")
+
+    
+

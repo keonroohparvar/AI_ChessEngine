@@ -160,12 +160,6 @@ class Pawn():
 
         return moves_list
 
-
-
-
-
-
-
     def move(self, location):
         print("move the piece")
     def take(self, location):
@@ -246,5 +240,6 @@ def populate_board(all_pieces, board):
 all_pieces = create_all_pieces()
 populate_board(all_pieces, ChessBoard)
 
-possible_moves = ChessBoard[1][1].find_moves(ChessBoard)
+
+possible_moves = ChessBoard[1][3].find_moves(ChessBoard)
 print(possible_moves)

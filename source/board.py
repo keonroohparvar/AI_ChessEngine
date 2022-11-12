@@ -44,6 +44,102 @@ class Bishop():
     def __repr__(self):
         return (self.name)
 
+    def find_moves(self, board):
+        moves_list = [] # output with list of all possible moves
+        position = self.position # where the piece is will be places in position
+        if (self.color == 1): # if the piece is white
+            for count in range(7):
+                i = count + 1
+                # check front right diagonal
+                if (position[0] > 0 and position[1] < 7): # if the piece is able to move forward and to the right
+                    # if the piece on the front right is a white piece
+                    if (board[position[0] - i][position[1] + i].color == 1):
+                        break
+                    # if the piece on the front right is a black piece or if there is no piece
+                    elif(board[position[0] - i][position[1] + i].color == 2 or
+                         board[position[0] - i][position[1] + i] == 0):
+                        move = [position[0] - i, position[1] + i]
+                        moves_list.append(move)
+                # check front left diagonal
+                if (position[0] > 0 and position[1] > 0): # see if the piece is able to move forwards and to the left
+                    # if the piece on the front left is a white piece
+                    if (board[position[0] - i][position[1] - i].color == 1):
+                        break
+                    # if the piece on the front left is a black piece or if there is no piece
+                    elif(board[position[0] - i][position[1] - i].color == 2 or
+                         board[position[0] - i][position[1] - i] == 0):
+                        move = [position[0] - i, position[1] - i]
+                        moves_list.append(move)
+                # check back right diagonal
+                if (position[0] < 7 and position[1] < 7): # see if the piece is able to move backward and to the right
+                    # if the piece on the back right is a white piece
+                    if (board[position[0] + i][position[1] + i].color == 1):
+                        break
+                    # if the piece on the back right is a black piece or if there is no piece
+                    elif(board[position[0] + i][position[1] + i].color == 2 or
+                         board[position[0] + i][position[1] + i] == 0):
+                        move = [position[0] + i, position[1] + i]
+                        moves_list.append(move)
+                # check back left diagonal
+                if (position[0] < 7 and position[1] > 0): # see if the piece is able to move backward and to the left
+                    # if the piece on the back left is a white piece
+                    if (board[position[0] + i][position[1] - i].color == 1):
+                        break
+                    # if the piece on the back right is a black piece or if there is no piece
+                    elif(board[position[0] + i][position[1] - i].color == 2 or
+                         board[position[0] + i][position[1] - i] == 0):
+                        move = [position[0] + i, position[1] - i]
+                        moves_list.append(move)
+
+        elif(self.color == 2):
+            for count in range(7):
+                i = count + 1
+                # check back left diagonal
+                if (position[0] > 0 and position[1] < 7): # if the piece is able to move backward and to the left
+                    # if the piece on the back left is a black piece
+                    if (board[position[0] - i][position[1] + i].color == 2):
+                        break
+                    # if the piece on the back left is a white piece or if there is no piece
+                    elif(board[position[0] - i][position[1] + i].color == 1 or
+                         board[position[0] - i][position[1] + i] == 0):
+                        move = [position[0] - i, position[1] + i]
+                        moves_list.append(move)
+                # check back right diagonal
+                if (position[0] > 0 and position[1] > 0): # see if the piece is able to move backward and to the right
+                    # if the piece on the back right is a black piece
+                    if (board[position[0] - i][position[1] - i].color == 2):
+                        break
+                    # if the piece on the back right is a white piece or if there is no piece
+                    elif(board[position[0] - i][position[1] - i].color == 1 or
+                         board[position[0] - i][position[1] - i] == 0):
+                        move = [position[0] - i, position[1] - i]
+                        moves_list.append(move)
+                # check front left diagonal
+                if (position[0] < 7 and position[1] < 7): # see if the piece is able to move forward and to the left
+                    # if the piece on the front left is a black piece
+                    if (board[position[0] + i][position[1] + i].color == 2):
+                        break
+                    # if the piece on the front left is a white piece or if there is no piece
+                    elif(board[position[0] + i][position[1] + i].color == 1 or
+                         board[position[0] + i][position[1] + i] == 0):
+                        move = [position[0] + i, position[1] + i]
+                        moves_list.append(move)
+                # check front right diagonal
+                if (position[0] < 7 and position[1] > 0): # see if the piece is able to move forward and to the right
+                    # if the piece on the front right is a black piece
+                    if (board[position[0] + i][position[1] - i].color == 2):
+                        break
+                    # if the piece on the front right is a white piece or if there is no piece
+                    elif(board[position[0] + i][position[1] - i].color == 1 or
+                         board[position[0] + i][position[1] - i] == 0):
+                        move = [position[0] + i, position[1] - i]
+                        moves_list.append(move)
+
+        else:
+            print("piece is not white or black, thus error")
+
+        return moves_list
+        
     def move(self, location):
         print("move the piece")
     def take(self, location):
@@ -169,6 +265,8 @@ class ChessBoard():
     def __init__(self, name, state):
         self.name = name
         self.state = state
+
+    # def encode_position(self):
 
 
 

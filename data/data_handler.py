@@ -39,7 +39,31 @@ def parse_game_string_to_list(game_string):
         list: The list of moves in the format:
             -> [('e4', 0.17), ('c5', 0.19), ...]
     """
-    pass
+    result = []
+    game_string = game_string.split("...")
+    game_string[0] = game_string[0][2:]
+    for i in range(len(game_string)):
+        game_string[i] = game_string[i][1:]
+        game_string[i] = game_string[i].split(" ")
+    for i in range(len(game_string)):
+        if (i == 0 or i == (len(game_string) - 1)) and game_string[i][3][0] == "#":
+            result.append((game_string[i][0], game_string[i][3][:-1]))
+        elif (i == 0 or i == (len(game_string) - 1)) and game_string[i][3][0] != "#":
+            result.append((game_string[i][0], float(game_string[i][3][:-1])))
+        elif game_string[i][3][0] == "#" and game_string[i][3][0]:
+            result.append((game_string[i][0], game_string[i][3][:-1]))
+            result.append((game_string[i][6], game_string[i][9][:-1]))
+        elif game_string[i][9][0] == "#":
+            result.append((game_string[i][0], float(game_string[i][3][:-1])))
+            result.append((game_string[i][6], game_string[i][9][:-1]))
+        elif game_string[i][3][0] == "#":
+            result.append((game_string[i][0], game_string[i][3][:-1]))
+            result.append((game_string[i][6], float(game_string[i][9][:-1])))
+        else:
+            result.append((game_string[i][0], float(game_string[i][3][:-1])))
+            result.append((game_string[i][6], float(game_string[i][9][:-1])))
+    return result
+
 
 # Jeremy
 def convert_game_to_pos_encodings(move_list):
@@ -80,9 +104,14 @@ def save_move_list_to_csv(move_list, data_filepath):
 
 if __name__ == '__main__':
     # Get All Games
-    games = pull_all_games('games.txt')
+    games = pull_all_games('small_game_dataset.txt')
 
     print(f"Here is an example game: \n{games[0]}")
+
+
+    file = open('small_game_dataset.txt', "r")
+    lines = file.readlines()
+    print(parse_game_string_to_list(lines[0]))
 
     
 

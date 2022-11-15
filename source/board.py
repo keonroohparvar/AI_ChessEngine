@@ -139,7 +139,7 @@ class Bishop():
             print("piece is not white or black, thus error")
 
         return moves_list
-        
+
     def move(self, location):
         print("move the piece")
     def take(self, location):
@@ -265,12 +265,53 @@ class ChessBoard():
     def __init__(self, name, state):
         self.name = name
         self.state = state
+        self.counter = 0
+        self.enc = ''
 
-    # def encode_position(self):
+    def encode_position(self):
+        print("Encode Position")
+        print(self.state)
 
-
-
-
+        for i in range(len(self.state)):
+            for j in range(len(self.state[i])):
+                if self.state[i][j]:
+                    if self.counter:
+                        self.enc += str(self.counter)
+                        self.counter = 0
+                    if 'WhitePawn' in str(self.state[i][j]):
+                        self.enc += 'P'
+                    elif 'WhiteRook' in str(self.state[i][j]):
+                        self.enc += 'R'
+                    elif 'WhiteKnight' in str(self.state[i][j]):
+                        self.enc += 'N'
+                    elif 'WhiteBishop' in str(self.state[i][j]):
+                        self.enc += 'B'
+                    elif 'WhiteQueen' in str(self.state[i][j]):
+                        self.enc += 'Q'
+                    elif 'WhiteKing' in str(self.state[i][j]):
+                        self.enc += 'K'
+                    elif 'BlackPawn' in str(self.state[i][j]):
+                        self.enc += 'p'
+                    elif 'BlackRook' in str(self.state[i][j]):
+                        self.enc += 'r'
+                    elif 'BlackKnight' in str(self.state[i][j]):
+                        self.enc += 'n'
+                    elif 'BlackBishop' in str(self.state[i][j]):
+                        self.enc += 'b'
+                    elif 'BlackQueen' in str(self.state[i][j]):
+                        self.enc += 'q'
+                    elif 'BlackKing' in str(self.state[i][j]):
+                        self.enc += 'k'
+                    if j == 7 and i < 7:
+                        self.enc += '/'
+                else:
+                    self.counter += 1
+                if j == 7:
+                    if self.counter:
+                        self.enc += str(self.counter)
+                        self.enc += '/'
+                        self.counter = 0
+        print(self.enc)
 
 def create_all_pieces():  # this function will create all the pieces in the game, and
     all_pieces = []
@@ -342,6 +383,8 @@ def populate_board(all_pieces, board):
 
     for i in range(len(board)):
         print(board[i])
+    
+    print(board)
 
 
 all_pieces = create_all_pieces()
@@ -351,3 +394,6 @@ populate_board(all_pieces, playing_board.state)
 
 possible_moves = playing_board.state[1][3].find_moves(playing_board.state)
 print(possible_moves)
+
+board = ChessBoard('Coreys Board', playing_board.state)
+board.encode_position()

@@ -261,15 +261,13 @@ class Pawn():
     def take(self, location):
         print("take a piece")
 
+
 class ChessBoard():
     def __init__(self, name, state):
         self.name = name
         self.state = state
 
     # def encode_position(self):
-
-
-
 
 
 def create_all_pieces():  # this function will create all the pieces in the game, and
@@ -321,6 +319,7 @@ def create_all_pieces():  # this function will create all the pieces in the game
     all_pieces.extend(white_pieces)
     return all_pieces
 
+
 def create_board():
     og_board = [[0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
@@ -332,6 +331,7 @@ def create_board():
                 [0, 0, 0, 0, 0, 0, 0, 0]]
     CB1 = ChessBoard("test_board", og_board)
     return CB1
+
 
 def populate_board(all_pieces, board):
     for i in range(len(board)):
@@ -349,5 +349,5 @@ playing_board = create_board()
 populate_board(all_pieces, playing_board.state)
 
 
-possible_moves = playing_board.state[1][3].find_moves(playing_board.state)
+possible_moves = playing_board.state[6][2].find_moves(playing_board.state)
 print(possible_moves)

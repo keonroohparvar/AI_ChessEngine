@@ -10,13 +10,13 @@ Date: 10/30/22
 # Python Imports
 import sys
 import os
-import tensorflow as tf
 import numpy
+import tensorflow as tf
+from keras.layers import Input, Dense
+from keras.optimizers import Adam
 
 class ChessAIModel:
-    def __init__(self, num_epochs, batch_size, learning_rate):
-        self.num_epochs = num_epochs
-        self.batch_size = batch_size
+    def __init__(self, learning_rate):
         self.learning_rate = learning_rate
     
     def get_model(self, model_type):
@@ -42,5 +42,32 @@ class ChessAIModel:
         """
         This function will return a simple Tesnorflow Model() object with the architecture defined below.
         """
-        pass
+        # Create Model
+        model = tf.keras.models.Sequential()
+
+        # Add Layers
+
+        INPUT_SIZE = (73,)
+        input_layer = Input(73)
+
+        layer1 = Dense(180, activation='relu')
+        layer2 = Dense(180, activation='relu')
+        layer3 = Dense(180, activation='relu')
+
+        # Connect all layers into model
+        model.add(input_layer)
+        model.add(layer1)
+        model.add(layer2)
+        model.add(layer3)
+        
+        # Create optimizer
+        opt = Adam(learning_rate=self.learning_rate)
+
+        # Compile model
+        model.compile(
+            optimizer = opt,
+            loss='mse',
+            )
+
+        return model
 

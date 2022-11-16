@@ -269,10 +269,6 @@ class ChessBoard():
         self.counter = 0
         self.enc = ''
 
-<<<<<<< HEAD
-    # def encode_position(self):
-
-=======
     def encode_position(self):
         print("Encode Position")
         print(self.state)
@@ -317,7 +313,6 @@ class ChessBoard():
                         self.enc += '/'
                         self.counter = 0
         print(self.enc)
->>>>>>> cc1e864c4d7ab4ff7d1384314f72a3ae79163e30
 
 def create_all_pieces():  # this function will create all the pieces in the game, and
     all_pieces = []
@@ -400,13 +395,10 @@ playing_board = create_board()
 populate_board(all_pieces, playing_board.state)
 
 
-<<<<<<< HEAD
 possible_moves = playing_board.state[6][2].find_moves(playing_board.state)
 print(possible_moves)
-=======
 possible_moves = playing_board.state[1][3].find_moves(playing_board.state)
 print(possible_moves)
 
 board = ChessBoard('Coreys Board', playing_board.state)
 board.encode_position()
->>>>>>> cc1e864c4d7ab4ff7d1384314f72a3ae79163e30

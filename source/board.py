@@ -256,7 +256,6 @@ class Pawn():
     def take(self, location):
         print("take a piece")
 
-
 class ChessBoard():
     def __init__(self, name):
         self.name = name
@@ -395,8 +394,6 @@ class ChessBoard():
             # Iterate over all pawns and find the one that can move
             pass
 
-
-        
 if __name__ == '__main__':
     board = ChessBoard('Test Board')
     print(board.encode_position())

@@ -69,3 +69,4 @@ class ChessBoard:
 if __name__ == '__main__':
     board = ChessBoard()
     print(board.positional_encode())
+    print(len(board.positional_encode()))

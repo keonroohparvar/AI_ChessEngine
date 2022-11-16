@@ -6,6 +6,16 @@ Author: Keon Roohparvar
 Date: 11/3/2022
 """
 
+import sys
+import os
+
+# Add source/ dir to path
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'source'))
+print(sys.path)
+
+# Local Imports
+from new_board import ChessBoard
+
 # Keon
 def pull_only_stockfish_games(in_filepath, out_filepath):
     """

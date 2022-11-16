@@ -256,6 +256,7 @@ class Pawn():
     def take(self, location):
         print("take a piece")
 
+
 class ChessBoard():
     def __init__(self, name):
         self.name = name

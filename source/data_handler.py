@@ -42,6 +42,11 @@ def parse_game_string_to_list(game_string):
         list: The list of moves in the format:
             -> [('e4', 0.17), ('c5', 0.19), ...]
     """
+    # Remove ? and !
+    game_string = game_string.replace('?', '')
+    game_string = game_string.replace('!', '')
+
+
     result = []
     game_string = game_string.split("...")
     game_string[0] = game_string[0][2:]
@@ -68,7 +73,7 @@ def parse_game_string_to_list(game_string):
     return result
 
 
-# Jeremy
+# Keon
 def convert_game_to_pos_encodings(move_list):
     """
     This function will be used to convert our move lists to data we can actually use. It will do 
@@ -88,7 +93,24 @@ def convert_game_to_pos_encodings(move_list):
         BoardArrayValues (list): List in the following format: 
             [(Positional Encoding 1, Stockfish Eval. 1), (Positional Encoding 2, Stockfish Eval. 2), ...]
     """
-    pass
+    board = ChessBoard()
+    BoardArrayValues = []
+
+    # Skip first move, and iterate through mvoe list
+    for this_move, this_eval in move_list:
+        # Push the move
+        board.make_move(this_move)
+        
+        # Get current encoding
+        this_encoding = board.positional_encode()
+
+        # Append this encoding and eval to arr
+        BoardArrayValues.append((this_encoding, this_eval))
+    
+    print(BoardArrayValues)
+    return BoardArrayValues
+
+
 
 # Devon
 def save_move_list_to_csv(move_list, data_filepath):
@@ -112,14 +134,22 @@ def load_our_dataset():
 
 if __name__ == '__main__':
     # Get All Games
-    games = pull_all_games('small_game_dataset.txt')
+    games = pull_all_games('../data/small_game_dataset.txt')
 
     print(f"Here is an example game: \n{games[0]}")
 
+    for game in games:
+        # Turn string into move + eval
+        this_move_list = parse_game_string_to_list(game)
+        print('move list: ')
+        print(this_move_list)
 
-    file = open('small_game_dataset.txt', "r")
-    lines = file.readlines()
-    print(parse_game_string_to_list(lines[0]))
+        # Turn move list into positional encoding list
+        this_positional_encoding_eval_list = convert_game_to_pos_encodings(this_move_list)
+        print('pos encoding list: ')
+        print(this_positional_encoding_eval_list)
+        
+
 
     
 

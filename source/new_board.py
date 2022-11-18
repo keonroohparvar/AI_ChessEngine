@@ -23,15 +23,16 @@ class ChessBoard:
         }
     
     def make_move(self, move):
-        if chess.Move.from_uci(move) not in self.board.legal_moves:
-            print('ERROR - Illegal Move.')
-            return -1
+        # if move_obj not in self.board.legal_moves:
+        #     print('ERROR - Illegal Move.')
+        #     return -1
         
         self.board.push_san(move)
         return 0
     
     def positional_encode(self):
-        print('Board position is: ' + self.board.fen())
+        # print('Board position is: ' + self.board.fen())
+        
         # Parse the fen notation 
         fen = self.board.fen()
 

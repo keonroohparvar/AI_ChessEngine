@@ -67,6 +67,9 @@ def train_model(training_csv):
     # Load in data
     X, Y = load_our_dataset(training_csv)
 
+    print(X)
+    return
+
     # Retrieve model
     model = get_model(MODEL_TYPE, LEARNING_RATE)
 

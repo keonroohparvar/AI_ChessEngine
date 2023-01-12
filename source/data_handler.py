@@ -6,6 +6,9 @@ Author: Keon Roohparvar
 Date: 11/3/2022
 """
 
+# Python imports
+from csv import writer
+
 # Local Imports
 from new_board import ChessBoard
 
@@ -110,9 +113,7 @@ def convert_game_to_pos_encodings(move_list):
     print(BoardArrayValues)
     return BoardArrayValues
 
-
-
-# Devon
+# Keon
 def save_move_list_to_csv(move_list, data_filepath):
     """
     This will save the list 'move_list' as a lot of new data points in the csv file located
@@ -125,7 +126,19 @@ def save_move_list_to_csv(move_list, data_filepath):
     Output: 
         None
     """
-    pass
+    this_game_positional_encodings = convert_game_to_pos_encodings(move_list)
+    for board_encoding, stockfish_eval in this_game_positional_encodings:
+        with open(data_filepath, 'a') as f:
+            f_writer = writer(f)
+
+            if '#' in str(stockfish_eval):
+                eval = 100. if '+' in str(stockfish_eval) else -100.
+            else:
+                eval = float(stockfish_eval)
+
+            f_writer.writerow([board_encoding, eval])
+
+
 
 # Keon
 def load_our_dataset():
@@ -144,11 +157,12 @@ if __name__ == '__main__':
         print('move list: ')
         print(this_move_list)
 
-        # Turn move list into positional encoding list
-        this_positional_encoding_eval_list = convert_game_to_pos_encodings(this_move_list)
-        print('pos encoding list: ')
-        print(this_positional_encoding_eval_list)
-        
+        # # Turn move list into positional encoding list
+        # this_positional_encoding_eval_list = convert_game_to_pos_encodings(this_move_list)
+        # print('pos encoding list: ')
+        # print(this_positional_encoding_eval_list)
+
+        save_move_list_to_csv(move_list=this_move_list, data_filepath='../data/small_game_dataset_formatted.csv')
 
 
     

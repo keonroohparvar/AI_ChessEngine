@@ -138,13 +138,6 @@ def save_move_list_to_csv(move_list, data_filepath):
 
             f_writer.writerow([board_encoding, eval])
 
-
-
-# Keon
-def load_our_dataset():
-    pass
-
-
 if __name__ == '__main__':
     # Get All Games
     games = pull_all_games('../data/small_game_dataset.txt')
@@ -163,7 +156,3 @@ if __name__ == '__main__':
         # print(this_positional_encoding_eval_list)
 
         save_move_list_to_csv(move_list=this_move_list, data_filepath='../data/small_game_dataset_formatted.csv')
-
-
-    
-

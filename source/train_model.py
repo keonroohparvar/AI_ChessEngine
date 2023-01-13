@@ -14,13 +14,27 @@ import os
 import argparse
 import tensorflow as tf
 import numpy as np
+import pandas as pd
 
 
 # Local Imports
 from model_architecture import ChessAIModel
-from data_handler import load_our_dataset
 
-def load_data_from_csv(filepath):
+def strlist_to_list(l):
+    """
+    This function will take a string representation of a list and convert it into a python list.
+    For example, it will take the string representation '[1, 2, 3]' -> List([1, 2, 3])
+
+    Arguments: 
+        l (String): the string representation of a list
+    Output:
+        List: the list object
+    """
+    l_split = l.strip('][').split(', ')
+    l_ints = [int(i) for i in l_split]
+    return l_ints
+
+def load_dataset(filepath):
     """
     This will simply load in the data we have already processed in data_handler.py, but it will
     be used in this file
@@ -31,8 +45,8 @@ def load_data_from_csv(filepath):
     Output:
         array: Array of data points we will use
     """
-    with open(filepath, 'r') as f:
-        return f.readlines()
+    df = pd.read_csv(filepath, header=None)
+    return df[0], df[1]
 
 def get_model(type_of_model, learning_rate):
     """
@@ -65,7 +79,7 @@ def train_model(training_csv):
     LEARNING_RATE = 0.01
 
     # Load in data
-    X, Y = load_our_dataset(training_csv)
+    X, Y = load_dataset(training_csv)
 
     print(X)
     return

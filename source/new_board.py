@@ -61,8 +61,8 @@ class ChessBoard:
         
         # Parse en passant
         en_passant_arr = [0] if en_passant == '-' else [chess.parse_square(en_passant)]
-
-        return pieces_arr + move_arr + castles_arr + move_arr + en_passant_arr + [int(halfmove_clock)] + [int(fullmove_num)]
+    
+        return pieces_arr + move_arr + castles_arr + en_passant_arr + [int(halfmove_clock)] + [int(fullmove_num)]
 
 
     

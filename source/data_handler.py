@@ -57,7 +57,7 @@ def parse_game_string_to_list(game_string):
         game_string[i] = game_string[i][1:]
         game_string[i] = game_string[i].split(" ")
     for i in range(len(game_string)):
-        if (i == 0 or i == (len(game_string) - 1)) and game_string[i][3][0] == "#":
+        if (i == 0 or i == (len(game_string) - 1)) and game_string[i][3][0] == "#":    
             result.append((game_string[i][0], game_string[i][3][:-1]))
         elif (i == 0 or i == (len(game_string) - 1)) and game_string[i][3][0] != "#":
             result.append((game_string[i][0], float(game_string[i][3][:-1])))
@@ -136,11 +136,11 @@ def save_move_list_to_csv(move_list, data_filepath):
             else:
                 eval = float(stockfish_eval)
 
-            f_writer.writerow([board_encoding, eval])
+            f_writer.writerow(board_encoding + [eval])
 
 if __name__ == '__main__':
     # Get All Games
-    games = pull_all_games('../data/small_game_dataset.txt')
+    games = pull_all_games('../data/games.txt')
 
     print(f"Here is an example game: \n{games[0]}")
 
@@ -155,4 +155,4 @@ if __name__ == '__main__':
         # print('pos encoding list: ')
         # print(this_positional_encoding_eval_list)
 
-        save_move_list_to_csv(move_list=this_move_list, data_filepath='../data/small_game_dataset_formatted.csv')
+        save_move_list_to_csv(move_list=this_move_list, data_filepath='../data/games.csv')

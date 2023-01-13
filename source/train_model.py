@@ -46,7 +46,8 @@ def load_dataset(filepath):
         array: Array of data points we will use
     """
     df = pd.read_csv(filepath, header=None)
-    return df[0], df[1]
+
+    return df.iloc[:, :-1], df.iloc[:, -1]
 
 def get_model(type_of_model, learning_rate):
     """
@@ -76,13 +77,10 @@ def train_model(training_csv):
     MODEL_TYPE = 'simple'
     NUM_EPOCHS = 100
     BATCH_SIZE = 16
-    LEARNING_RATE = 0.01
+    LEARNING_RATE = 0.00001
 
     # Load in data
     X, Y = load_dataset(training_csv)
-
-    print(X)
-    return
 
     # Retrieve model
     model = get_model(MODEL_TYPE, LEARNING_RATE)

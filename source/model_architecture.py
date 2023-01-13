@@ -47,18 +47,22 @@ class ChessAIModel:
 
         # Add Layers
 
-        INPUT_SIZE = (73,)
-        input_layer = Input(73)
+        INPUT_SIZE = (72,)
+        input_layer = Input(72)
 
-        layer1 = Dense(180, activation='relu')
-        layer2 = Dense(180, activation='relu')
-        layer3 = Dense(180, activation='relu')
+        layer1 = Dense(1000, activation='relu')
+        layer2 = Dense(500, activation='relu')
+        layer3 = Dense(500, activation='relu')
+        layer4 = Dense(500, activation='relu')
+        layer5 = Dense(500, activation='relu')
 
         # Connect all layers into model
         model.add(input_layer)
         model.add(layer1)
         model.add(layer2)
         model.add(layer3)
+        model.add(layer4)
+        model.add(layer5)
         
         # Create optimizer
         opt = Adam(learning_rate=self.learning_rate)

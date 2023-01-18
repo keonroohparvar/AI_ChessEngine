@@ -57,7 +57,11 @@ def parse_game_string_to_list(game_string):
         game_string[i] = game_string[i][1:]
         game_string[i] = game_string[i].split(" ")
     for i in range(len(game_string)):
-        if (i == 0 or i == (len(game_string) - 1)) and game_string[i][3][0] == "#":    
+        print("\n\n\n\n")
+        print(game_string[i])
+        if len(game_string[i]) == 2:
+            continue
+        elif (i == 0 or i == (len(game_string) - 1)) and game_string[i][3][0] == "#":
             result.append((game_string[i][0], game_string[i][3][:-1]))
         elif (i == 0 or i == (len(game_string) - 1)) and game_string[i][3][0] != "#":
             result.append((game_string[i][0], float(game_string[i][3][:-1])))

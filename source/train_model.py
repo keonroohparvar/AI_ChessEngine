@@ -15,6 +15,7 @@ import argparse
 import tensorflow as tf
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 
 # Local Imports
@@ -47,7 +48,15 @@ def load_dataset(filepath):
     """
     df = pd.read_csv(filepath, header=None)
 
-    return df.iloc[:, :-1], df.iloc[:, -1]
+    # Bound values between [-15, 15]
+    y = df.pop(df.columns[-1])
+    y = y.clip(upper=15, lower=-15)
+    print(y.head())
+
+    # Split into training + testing
+    train_x, test_x, train_y, test_y = train_test_split(df, y, test_size=0.2)
+
+    return train_x, test_x, train_y, test_y
 
 def get_model(type_of_model, learning_rate):
     """
@@ -76,19 +85,19 @@ def train_model(training_csv):
     # HYPERPARAMETERS
     MODEL_TYPE = 'simple'
     NUM_EPOCHS = 100
-    BATCH_SIZE = 16
-    LEARNING_RATE = 0.00001
+    BATCH_SIZE = 128
+    LEARNING_RATE = 1e-3
 
     # Load in data
-    X, Y = load_dataset(training_csv)
+    train_x, test_x, train_y, test_y = load_dataset(training_csv)
 
     # Retrieve model
     model = get_model(MODEL_TYPE, LEARNING_RATE)
 
     # Train Model
     model.fit(
-        x=X, 
-        y=Y,
+        x=train_x, 
+        y=train_y,
         epochs=NUM_EPOCHS,
         batch_size=BATCH_SIZE,
     )

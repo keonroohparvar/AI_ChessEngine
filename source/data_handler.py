@@ -57,8 +57,8 @@ def parse_game_string_to_list(game_string):
         game_string[i] = game_string[i][1:]
         game_string[i] = game_string[i].split(" ")
     for i in range(len(game_string)):
-        print("\n\n\n\n")
-        print(game_string[i])
+        # print("\n\n\n\n")
+        # print(game_string[i])
         if len(game_string[i]) == 2:
             continue
         elif (i == 0 or i == (len(game_string) - 1)) and game_string[i][3][0] == "#":
@@ -114,7 +114,7 @@ def convert_game_to_pos_encodings(move_list):
         # Append this encoding and eval to arr
         BoardArrayValues.append((this_encoding, this_eval))
     
-    print(BoardArrayValues)
+    # print(BoardArrayValues)
     return BoardArrayValues
 
 # Keon
@@ -136,7 +136,7 @@ def save_move_list_to_csv(move_list, data_filepath):
             f_writer = writer(f)
 
             if '#' in str(stockfish_eval):
-                eval = 100. if '+' in str(stockfish_eval) else -100.
+                eval = -100. if '-' in str(stockfish_eval) else 100.
             else:
                 eval = float(stockfish_eval)
 
@@ -151,8 +151,8 @@ if __name__ == '__main__':
     for game in games:
         # Turn string into move + eval
         this_move_list = parse_game_string_to_list(game)
-        print('move list: ')
-        print(this_move_list)
+        # print('move list: ')
+        # print(this_move_list)
 
         # # Turn move list into positional encoding list
         # this_positional_encoding_eval_list = convert_game_to_pos_encodings(this_move_list)

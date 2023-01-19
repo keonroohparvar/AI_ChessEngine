@@ -2,4 +2,5 @@ venv/
 __pycache__
 .DS_Store
 games.txt
+*games*.csv
 .idea/

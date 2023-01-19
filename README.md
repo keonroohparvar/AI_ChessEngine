@@ -29,3 +29,4 @@ The process for getting this code setup is by following the steps below (please 
 
 That's it! To check this all works, type `python` into the terminal and type `import tensorflow` to ensure that you properly installed the packages. If you did, congrats! You are done with setup.
 
+Also peep this [Link](https://colab.research.google.com/drive/1smI2B7kiwzkr43TqnCYOpxocZlI0kPUh?usp=sharing#scrollTo=fj46oVzS9111)

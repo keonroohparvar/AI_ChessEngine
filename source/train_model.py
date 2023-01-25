@@ -10,7 +10,9 @@ Date: 11/3/2022
 """
 
 # Python Imports
+import sys
 import os
+import importlib
 import argparse
 import tensorflow as tf
 import numpy as np
@@ -19,7 +21,9 @@ from sklearn.model_selection import train_test_split
 
 
 # Local Imports
-from model_architecture import ChessAIModel
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+print(sys.path)
+# from models.model_architecture import ChessAIModel
 
 def strlist_to_list(l):
     """
@@ -58,41 +62,63 @@ def load_dataset(filepath):
 
     return train_x, test_x, train_y, test_y
 
-def get_model(type_of_model, learning_rate):
+def import_model(path_to_model_file):
+    module = importlib.import_module(path_to_model_file, package='source')
+    model_class = getattr(module, 'ChessAIModel')
+    return model_class
+
+def get_model(path_to_model_file, learning_rate=1e-3):
     """
     This will interface with the model_architecture file to retrieve the proper model we want to 
     use for training.
-
     Argument:
-        type_of_model (str): The type of model we want to retreive. Currently only 'simple' is supported.
-    
+        path_to_model_file (str): The location to your specific model file that contains the ChessAIModel
+            class. For keon, it looks like -> "models.keon.model"
     Output:
         keras model: A keras model instance
     """
+    module_name = path_to_model_file.replace('/', '.') + '.model'
+    model_class = import_model(module_name)
     # Create model class
-    model = ChessAIModel(learning_rate)
-    return model.get_model(type_of_model)
+    model = (model_class()).get_model()
+    return model
 
+def save_model(model, path):
+    """
+    This saves models in the saved model .h5 keras format. 
 
-def train_model(training_csv):
+    Arguments:
+        model (Keras Model): The model you want to save
+        path (str): Your specific folder (should be your name folder)
+    """
+    path_to_save = os.path.join(path, 'saved_models')
+    dirs_in_path = os.listdir(path)
+    if 'saved_models' not in dirs_in_path:
+        os.makedirs(path_to_save)
+
+    name_of_model = 'model' + str(len(os.listdir(path_to_save))) + '.h5'
+
+    model.save(os.path.join(path_to_save, name_of_model))
+
+def train_model(training_csv, model_dir):
     """
     This is the big function that will train our neural network. 
 
     Argument:
         training_csv (filepath): The location of where our trainng fata is that we preprocessed
-        in our data_handler.py file.
+            in our data_handler.py file.
+        model_dir (filepath): Location of the directory that contains your model.py file and where
+            you want to save your models.
     """
     # HYPERPARAMETERS
-    MODEL_TYPE = 'simple'
-    NUM_EPOCHS = 100
+    NUM_EPOCHS = 10
     BATCH_SIZE = 128
-    LEARNING_RATE = 1e-3
 
     # Load in data
     train_x, test_x, train_y, test_y = load_dataset(training_csv)
 
     # Retrieve model
-    model = get_model(MODEL_TYPE, LEARNING_RATE)
+    model = get_model(model_dir)
 
     # Train Model
     model.fit(
@@ -102,9 +128,14 @@ def train_model(training_csv):
         batch_size=BATCH_SIZE,
     )
 
+    SAVE_MODEL = True
+    if SAVE_MODEL:
+        save_model(model, model_dir)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('csv_location', type=str)
+    parser.add_argument('model_dir', type=str)
 
     args = parser.parse_args()
 
@@ -112,4 +143,8 @@ if __name__ == '__main__':
         print('ERROR - Did not provide a correct location to the training .csv file.')
         exit(-1)
 
-    train_model(args.csv_location)
+    if not args.model_dir or (not os.path.isdir(args.model_dir)):
+        print('ERROR - Did not provide a correct location to the model directory.')
+        exit(-1)
+
+    train_model(args.csv_location, args.model_dir)

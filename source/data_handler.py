@@ -144,7 +144,7 @@ def save_move_list_to_csv(move_list, data_filepath):
 
 if __name__ == '__main__':
     # Get All Games
-    games = pull_all_games('../data/games.txt')
+    games = pull_all_games('../data/small_game_dataset.txt')
 
     print(f"Here is an example game: \n{games[0]}")
 
@@ -159,4 +159,4 @@ if __name__ == '__main__':
         # print('pos encoding list: ')
         # print(this_positional_encoding_eval_list)
 
-        save_move_list_to_csv(move_list=this_move_list, data_filepath='../data/games.csv')
+        save_move_list_to_csv(move_list=this_move_list, data_filepath='../data/small_games.csv')

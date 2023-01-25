@@ -16,7 +16,7 @@ from keras.layers import Input, Dense
 from keras.optimizers import Adam
 
 class ChessAIModel:
-    def __init__(self, learning_rate):
+    def __init__(self, learning_rate=1e-3):
         self.learning_rate = learning_rate
     
     def get_model(self, model_type):
@@ -45,7 +45,7 @@ class ChessAIModel:
         # Create Model
         model = tf.keras.models.Sequential()
 
-        # Add Layers
+        # Add Layer
 
         INPUT_SIZE = (72,)
         input_layer = Input(INPUT_SIZE)
@@ -60,7 +60,7 @@ class ChessAIModel:
         layer7 = Dense(500, activation='relu')
         output_layer = Dense(1, activation='linear')
 
-        # Connect all layers into model
+        csv# Connect all layers into model
         model.add(input_layer)
         model.add(layer1)
         model.add(layer2)

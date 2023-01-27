@@ -21,9 +21,9 @@ from sklearn.model_selection import train_test_split
 
 
 # Local Imports
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models')
+sys.path.append(MODEL_DIR)
 print(sys.path)
-# from models.model_architecture import ChessAIModel
 
 def strlist_to_list(l):
     """
@@ -67,7 +67,7 @@ def import_model(path_to_model_file):
     model_class = getattr(module, 'ChessAIModel')
     return model_class
 
-def get_model(path_to_model_file, learning_rate=1e-3):
+def get_model(model_folder_name, learning_rate=1e-3):
     """
     This will interface with the model_architecture file to retrieve the proper model we want to 
     use for training.
@@ -77,7 +77,7 @@ def get_model(path_to_model_file, learning_rate=1e-3):
     Output:
         keras model: A keras model instance
     """
-    module_name = path_to_model_file.replace('/', '.') + '.model'
+    module_name = model_folder_name + '.model'
     model_class = import_model(module_name)
     # Create model class
     model = (model_class()).get_model()
@@ -143,7 +143,7 @@ if __name__ == '__main__':
         print('ERROR - Did not provide a correct location to the training .csv file.')
         exit(-1)
 
-    if not args.model_dir or (not os.path.isdir(args.model_dir)):
+    if not args.model_dir or (args.model_dir not in os.listdir(MODEL_DIR)):
         print('ERROR - Did not provide a correct location to the model directory.')
         exit(-1)
 

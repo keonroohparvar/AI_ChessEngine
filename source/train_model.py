@@ -84,16 +84,18 @@ def get_model(model_folder_name, learning_rate=1e-3):
     model = (model_class()).get_model()
     return model
 
-def save_model(model, path):
+def save_model(model, model_dir, user):
     """
     This saves models in the saved model .h5 keras format. 
 
     Arguments:
         model (Keras Model): The model you want to save
-        path (str): Your specific folder (should be your name folder)
+        model_dir (str): Path to the models/ folder
+        user (str): Your name (make sure you have a fodler in the models/ folder)
     """
-    path_to_save = os.path.join(path, 'saved_models')
-    dirs_in_path = os.listdir(path)
+    user_dir = os.path.join(model_dir, user)
+    path_to_save = os.path.join(user_dir, 'saved_models')
+    dirs_in_path = os.listdir(user_dir)
     if 'saved_models' not in dirs_in_path:
         os.makedirs(path_to_save)
 
@@ -101,25 +103,27 @@ def save_model(model, path):
 
     model.save(os.path.join(path_to_save, name_of_model))
 
-def train_model(training_csv, model_dir):
+def train_model(training_csv, user):
     """
     This is the big function that will train our neural network. 
 
     Argument:
         training_csv (filepath): The location of where our trainng fata is that we preprocessed
             in our data_handler.py file.
-        model_dir (filepath): Location of the directory that contains your model.py file and where
-            you want to save your models.
+        user (str): your name - make sure a folder with your name exists in the models/ directory. For example, if
+            you pass in 'keon' as the user parameter, then make sure a keon/ folder exists in models/.
     """
     # HYPERPARAMETERS
     NUM_EPOCHS = 10
     BATCH_SIZE = 128
+    MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models')
+
 
     # Load in data
     train_x, test_x, train_y, test_y = load_dataset(training_csv)
 
     # Retrieve model
-    model = get_model(model_dir)
+    model = get_model(user)
 
     # Train Model
     model.fit(
@@ -131,7 +135,7 @@ def train_model(training_csv, model_dir):
 
     SAVE_MODEL = True
     if SAVE_MODEL:
-        save_model(model, model_dir)
+        save_model(model, MODEL_DIR, user)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

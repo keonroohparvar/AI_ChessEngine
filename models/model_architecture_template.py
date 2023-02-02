@@ -40,35 +40,24 @@ class ChessAIModel:
     
     def get_simple_model(self):
         """
-        This function will return a simple Tesnorflow Model() object with the architecture defined below.
+        This function will return a simple Tensorflow Model() object with the architecture defined below.
         """
         # Create Model
         model = tf.keras.models.Sequential()
 
-        # Add Layer
-
+        # Define input layer 
         INPUT_SIZE = (72,)
         input_layer = Input(INPUT_SIZE)
-        print('getting simple model :)')
 
-        layer1 = Dense(1000, activation='relu')
-        layer2 = Dense(1000, activation='relu')
-        layer3 = Dense(1000, activation='relu')
-        layer4 = Dense(500, activation='relu')
-        layer5 = Dense(500, activation='relu')
-        layer6 = Dense(500, activation='relu')
-        layer7 = Dense(500, activation='relu')
+        # PUT YOUR MODEL IMPLEMENTATION BELOW!!!
+        layer1 = Dense(100, activation='relu')
+        layer2 = Dense(50, activation='relu')
         output_layer = Dense(1, activation='linear')
 
-        csv# Connect all layers into model
+        # Connect all layers into model
         model.add(input_layer)
         model.add(layer1)
         model.add(layer2)
-        model.add(layer3)
-        model.add(layer4)
-        model.add(layer5)
-        model.add(layer6)
-        model.add(layer7)
         model.add(output_layer)
 
         # Create optimizer

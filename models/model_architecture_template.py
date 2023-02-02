@@ -19,7 +19,7 @@ class ChessAIModel:
     def __init__(self, learning_rate=1e-3):
         self.learning_rate = learning_rate
     
-    def get_model(self, model_type):
+    def get_model(self, model_type='simple'):
         """
         This will return a Tensorflow Neural Network Object that can be used to train, and its
         architecture will be defined by the model_type parameter.

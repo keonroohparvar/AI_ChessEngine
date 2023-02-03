@@ -40,7 +40,7 @@ class ChessAIModel:
     
     def get_simple_model(self):
         """
-        This function will return a simple Tensorflow Model() object with the architecture defined below.
+        CHANGE THIS FUNCTION TO SET YOUR MODEL!!!
         """
         # Create Model
         model = tf.keras.models.Sequential()

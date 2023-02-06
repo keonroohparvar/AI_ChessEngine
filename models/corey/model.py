@@ -50,14 +50,24 @@ class ChessAIModel:
         input_layer = Input(INPUT_SIZE)
 
         # PUT YOUR MODEL IMPLEMENTATION BELOW!!!
-        layer1 = Dense(100, activation='relu')
-        layer2 = Dense(50, activation='relu')
+        layer1 = Dense(2000, activation='relu')
+        layer2 = Dense(1000, activation='relu')
+        layer3 = Dense(500, activation='relu')
+        layer4 = Dense(250, activation='relu')
+        layer5 = Dense(125, activation='relu')
+        # layer6 = Dense(64, activation='relu')
+        # layer7 = Dense(32, activation='relu')
         output_layer = Dense(1, activation='linear')
 
         # Connect all layers into model
         model.add(input_layer)
         model.add(layer1)
         model.add(layer2)
+        model.add(layer3)
+        model.add(layer4)
+        model.add(layer5)
+        # model.add(layer6)
+        # model.add(layer7)
         model.add(output_layer)
 
         # Create optimizer

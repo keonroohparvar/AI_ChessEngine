@@ -21,6 +21,9 @@ class ChessBoard:
             'K': 11,
             'P': 12
         }
+
+    def available_moves(self):
+        return self.board.legal_moves
     
     def make_move(self, move):
         # if move_obj not in self.board.legal_moves:
@@ -30,11 +33,14 @@ class ChessBoard:
         self.board.push_san(move)
         return 0
     
+    def get_fen(self):
+        return self.board.fen()
+    
     def positional_encode(self):
         # print('Board position is: ' + self.board.fen())
         
         # Parse the fen notation 
-        fen = self.board.fen()
+        fen = self.get_fen()
 
         pieces, move, castles, en_passant, halfmove_clock, fullmove_num = fen.split(' ')
 

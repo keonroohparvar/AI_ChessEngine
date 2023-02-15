@@ -85,11 +85,10 @@ def play_game(board, model1, model2):
         board.make_move(str(best_move_prediction))
         print(f"{turn}'s made the move - {str(best_move_prediction)}")
 
-
-        
-
         # Update turn
         turn = 'white' if turn == 'black' else 'black'
+
+    
 
 
 

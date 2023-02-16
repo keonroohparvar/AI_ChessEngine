@@ -12,7 +12,7 @@ import sys
 import os
 import numpy
 import tensorflow as tf
-from keras.layers import Input, Dense, Conv2D, Flatten
+from keras.layers import Input, Dense, Conv2D, Flatten, Concatenate, Reshape
 from keras.optimizers import Adam
 import numpy as np
 
@@ -96,14 +96,18 @@ class ChessAIModel:
         print(f'inp shape: {inputs.shape}')
 
         board_tensor, non_board_tensor = inputs[:, :64], inputs[:, 64:]
-        board_tensor = tf.reshape(board_tensor, np.array([8,8]))
+        board_tensor = Reshape(np.array([-1,8,8,1]))(board_tensor)
+
+        print(f'Board tensor shaope: {board_tensor.shape}')
 
         # Convolude on board data
         x = Conv2D(128, 3, padding='same')(board_tensor)
         x = Conv2D(256, 3, padding='same')(x)
         x = Flatten()(x)
 
-        board_and_non_board = tf.concat([x, non_board_tensor])
+        # Concat board convolution data and non_board tensors
+        # board_and_non_board = tf.concat([x, non_board_tensor])
+        board_and_non_board = Concatenate()([x, non_board_tensor])
         x = Dense(2000, activation='relu')(board_and_non_board)
         x = Dense(1000, activation='relu')(x)
         x = Dense(500, activation='relu')(x)

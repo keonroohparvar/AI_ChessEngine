@@ -20,6 +20,9 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+# # Checks to see if running on GPU
+# tf.debugging.set_log_device_placement(True)
+
 
 # Local Imports
 MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models')
@@ -124,6 +127,8 @@ def train_model(training_csv, user):
 
     # Retrieve model
     model = get_model(user)
+
+
 
     # Train Model
     model.fit(

@@ -12,14 +12,15 @@ import sys
 import os
 import numpy
 import tensorflow as tf
-from keras.layers import Input, Dense
+from keras.layers import Input, Dense, Conv2D, Flatten
 from keras.optimizers import Adam
+import numpy as np
 
 class ChessAIModel:
     def __init__(self, learning_rate=1e-3):
         self.learning_rate = learning_rate
     
-    def get_model(self, model_type='simple'):
+    def get_model(self, model_type='conv'):
         """
         This will return a Tensorflow Neural Network Object that can be used to train, and its
         architecture will be defined by the model_type parameter.
@@ -34,6 +35,9 @@ class ChessAIModel:
         """
         if model_type == 'simple':
             return self.get_simple_model()
+        
+        if model_type == 'conv':
+            return self.get_conv_model()
         
         else:
             raise NotImplementedError
@@ -51,7 +55,7 @@ class ChessAIModel:
         input_layer = Input(INPUT_SIZE)
         print('getting simple model :)')
 
-        layer1 = Dense(1000, activation='relu')
+        layer1 = Dense(2000, activation='relu')
         layer2 = Dense(1000, activation='relu')
         layer3 = Dense(1000, activation='relu')
         layer4 = Dense(500, activation='relu')
@@ -82,4 +86,41 @@ class ChessAIModel:
 
         return model
 
+    def get_conv_model(self):
+        """
+        This function will return a conv. model Tesnorflow Model() object with the architecture defined below.
+        """
+        # Split tensor into board and other information
+        INPUT_SIZE = (72,)
+        inputs = Input(shape=INPUT_SIZE)
+        print(f'inp shape: {inputs.shape}')
+
+        board_tensor, non_board_tensor = inputs[:, :64], inputs[:, 64:]
+        board_tensor = tf.reshape(board_tensor, np.array([8,8]))
+
+        # Convolude on board data
+        x = Conv2D(128, 3, padding='same')(board_tensor)
+        x = Conv2D(256, 3, padding='same')(x)
+        x = Flatten()(x)
+
+        board_and_non_board = tf.concat([x, non_board_tensor])
+        x = Dense(2000, activation='relu')(board_and_non_board)
+        x = Dense(1000, activation='relu')(x)
+        x = Dense(500, activation='relu')(x)
+        x = Dense(500, activation='relu')(x)
+        x = Dense(500, activation='relu')(x)
+        outputs = Dense(1, activation='linear')(x)
+
+        # Create optimizer
+        opt = Adam(learning_rate=self.learning_rate)
+
+        model = tf.keras.Model(inputs=inputs, outputs=outputs, name='keons_conv_model')
+
+        # Compile model
+        model.compile(
+            optimizer = opt,
+            loss='mse',
+            )
+
+        return model
 

@@ -32,6 +32,9 @@ def find_best_move(model, board, turn):
 
     legal_moves = list(board.get_legal_moves())
 
+    if len(legal_moves) == 0:
+        return -1
+
     # print([str(i) for i in legal_moves])
 
     # Iterate over potential moves and save predictions
@@ -64,22 +67,27 @@ def find_best_move(model, board, turn):
     if turn == 'black':
         return legal_moves[np.argmin(move_predictions)]
 
-def play_game(board, model1, model2):
+def play_game(board, model1, model2, print_board):
     """
     This will be the main thing that plays games!
     """
     turn = 'white'
 
+    # Keep track of move list
+    move_list = []
+
     while not (board.game_is_done())[0]:
-        print('\n------\n')
-        print(f'board fen: {board.get_fen()}')
-        board.print_board()
-        print(f'End status: {(board.game_is_done())[0]}')
-        print('\n------\n')
+        if print_board:
+            print('\n------\n')
+            print(f'board fen: {board.get_fen()}')
+            board.print_board()
+            print('\n------\n')
         
         model_to_move = model1 if turn == 'white' else model2
         best_move_prediction = find_best_move(model_to_move, board, turn)
-        print(f'move pred: {str(best_move_prediction)}')
+        if best_move_prediction == -1:
+            break
+        move_list.append(str(best_move_prediction))
 
         # Make best move predicted by the model
         board.make_move(str(best_move_prediction))
@@ -87,6 +95,15 @@ def play_game(board, model1, model2):
 
         # Update turn
         turn = 'white' if turn == 'black' else 'black'
+
+    if board.game_is_done()[1] == 'draw':
+        print('Draw.')
+        return None, move_list
+
+    winning_color = 'white' if turn == 'black' else 'black'
+    print(f'{winning_color.upper()} has won the game.')
+
+    return winning_color, move_list
 
     
 
@@ -98,14 +115,14 @@ def play_game(board, model1, model2):
 
 def main():
     MODEL1_PATH = '../models/corey/saved_models/model7.h5'
-    model1 = tf.keras.models.load_model(MODEL1_PATH)
+    model2 = tf.keras.models.load_model(MODEL1_PATH)
 
-    MODEL2_PATH = '../models/corey/saved_movels/model0.h5'
-    model2 = tf.keras.models.load_model(MODEL1_PATH) 
+    MODEL2_PATH = '../models/keon/saved_models/model0.h5'
+    model1 = tf.keras.models.load_model(MODEL2_PATH) 
 
     board = ChessBoard()
     
-    play_game(board, model1, model2)
+    play_game(board, model1, model2, print_board=True)
 
 if __name__ == '__main__':
     main()

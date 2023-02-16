@@ -6,7 +6,6 @@ import chess
 import chess.svg
 import time
 import os
-import matplotlib.pyplot as plt
 
 class ChessBoard:
     def __init__(self):

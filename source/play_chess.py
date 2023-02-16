@@ -10,6 +10,7 @@ Date: 11/3/2022
 # Imports
 import sys
 import os
+import argparse
 
 import tensorflow as tf
 import numpy as np
@@ -105,24 +106,32 @@ def play_game(board, model1, model2, print_board):
 
     return winning_color, move_list
 
-    
+def main(model1_path, model2_path, print_board):
+    # MODEL1_PATH = '../models/corey/saved_models/model7.h5'
+    # MODEL2_PATH = '../models/keon/saved_models/model0.h5'
 
+    model2 = tf.keras.models.load_model(model1_path)
 
-
-    
-
-
-
-def main():
-    MODEL1_PATH = '../models/corey/saved_models/model7.h5'
-    model2 = tf.keras.models.load_model(MODEL1_PATH)
-
-    MODEL2_PATH = '../models/keon/saved_models/model0.h5'
-    model1 = tf.keras.models.load_model(MODEL2_PATH) 
+    model1 = tf.keras.models.load_model(model2_path) 
 
     board = ChessBoard()
     
-    play_game(board, model1, model2, print_board=True)
+    play_game(board, model1, model2, print_board)
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('model1', type=str, help='Path to the model that will play as White.')
+    parser.add_argument('model2', type=str, help='Path to the model that will play as Black.')
+    parser.add_argument('--print_board', type=bool, default=True)
+
+    args = parser.parse_args()
+
+    if not args.model1 or (not os.path.isfile(args.model1)):
+        print('ERROR - Did not provide a correct location to the the first model.')
+        exit(-1)
+
+    if not args.model2 or (not os.path.isfile(args.model2)):
+        print('ERROR - Did not provide a correct location to the the second model.')
+        exit(-1)
+
+    main(args.model1, args.model2, args.print_board)

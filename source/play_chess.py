@@ -110,9 +110,8 @@ def main(model1_path, model2_path, print_board):
     # MODEL1_PATH = '../models/corey/saved_models/model7.h5'
     # MODEL2_PATH = '../models/keon/saved_models/model0.h5'
 
-    model2 = tf.keras.models.load_model(model1_path)
-
-    model1 = tf.keras.models.load_model(model2_path) 
+    model1 = tf.keras.models.load_model(model1_path)
+    model2 = tf.keras.models.load_model(model2_path) 
 
     board = ChessBoard()
     

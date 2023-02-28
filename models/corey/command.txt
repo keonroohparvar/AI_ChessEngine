@@ -1,3 +1,4 @@
+C:\Users\cagen\Documents\github\SPD_Chessbot
 python C:\Users\cagen\Documents\github\SPD_Chessbot\source\train_model.py C:\Users\cagen\Documents\github\SPD_Chessbot\data\games.csv corey
 
 Models:
@@ -9,3 +10,4 @@ model4 1000/500/250/125/72/64/32		Loss:7.9258 	RunTime: 585
 model5 1000/500/250/125/64 			Loss:7.7690 	RunTime: 591
 model6 2000/1000/500/250/125 			Loss: 5.7715 	RunTime: 1621
 model7 2000/1000/500/250 			Loss: 5.7319	RunTime: 1421
+model8 2000/1000/500	 			Loss: 4.9496	RunTime: 1538

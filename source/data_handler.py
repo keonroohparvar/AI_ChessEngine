@@ -8,9 +8,12 @@ Date: 11/3/2022
 
 # Python imports
 from csv import writer
+import re
+import numpy as np
+import pandas as pd
 
 # Local Imports
-from new_board import ChessBoard
+from board import ChessBoard
 
 # Keon
 def pull_only_stockfish_games(in_filepath, out_filepath):
@@ -45,40 +48,29 @@ def parse_game_string_to_list(game_string):
         list: The list of moves in the format:
             -> [('e4', 0.17), ('c5', 0.19), ...]
     """
-    # Remove ? and !
-    game_string = game_string.replace('?', '')
-    game_string = game_string.replace('!', '')
+    # print(game_string)
+    moves = re.findall(r'\d*\.* (\S*) \{', game_string)
+    evals = re.findall(r'\[%eval\s([-A-Za-z0-9_\.\#]+)\]', game_string)
 
+    moves = [i for i in moves if '#' not in i]
+    moves = [i.replace('?', '').replace('!', '') for i in moves]
 
-    result = []
-    game_string = game_string.split("...")
-    game_string[0] = game_string[0][2:]
-    for i in range(len(game_string)):
-        game_string[i] = game_string[i][1:]
-        game_string[i] = game_string[i].split(" ")
-    for i in range(len(game_string)):
-        # print("\n\n\n\n")
-        # print(game_string[i])
-        if len(game_string[i]) == 2:
-            continue
-        elif (i == 0 or i == (len(game_string) - 1)) and game_string[i][3][0] == "#":
-            result.append((game_string[i][0], game_string[i][3][:-1]))
-        elif (i == 0 or i == (len(game_string) - 1)) and game_string[i][3][0] != "#":
-            result.append((game_string[i][0], float(game_string[i][3][:-1])))
-        elif game_string[i][3][0] == "#" and game_string[i][3][0]:
-            result.append((game_string[i][0], game_string[i][3][:-1]))
-            result.append((game_string[i][6], game_string[i][9][:-1]))
-        elif game_string[i][9][0] == "#":
-            result.append((game_string[i][0], float(game_string[i][3][:-1])))
-            result.append((game_string[i][6], game_string[i][9][:-1]))
-        elif game_string[i][3][0] == "#":
-            result.append((game_string[i][0], game_string[i][3][:-1]))
-            result.append((game_string[i][6], float(game_string[i][9][:-1])))
-        else:
-            result.append((game_string[i][0], float(game_string[i][3][:-1])))
-            result.append((game_string[i][6], float(game_string[i][9][:-1])))
-    return result
+    # print(moves)
+    # print(evals)
 
+    # print(len(moves))
+    # print(len(evals))
+
+    # They remove evaluations if the move list is longer than 100 moves
+    if len(moves) != len(evals):
+        # print("ERROR - Moves != evals with game: \n-> ", game_string)
+        # print(moves)
+        # if len(moves) < 100:
+        #     print('\nlength of moves less than 100')
+        # print(evals)
+        return []
+
+    return list(zip(moves, evals))
 
 # Keon
 def convert_game_to_pos_encodings(move_list):
@@ -142,21 +134,79 @@ def save_move_list_to_csv(move_list, data_filepath):
 
             f_writer.writerow(board_encoding + [eval])
 
-if __name__ == '__main__':
-    # Get All Games
-    games = pull_all_games('../data/small_game_dataset.txt')
+def data_pipeline(path_to_games_file, num_games=None):
+    """
+    This is the whole pipeline that our model will call, and this will return a dataframe of our dataset
+    """
+    games = pull_all_games(path_to_games_file)
 
-    print(f"Here is an example game: \n{games[0]}")
-
-    for game in games:
+    # If num_games is set, choose a random subset of games from that data
+    if num_games:
+        games_for_training = np.random.choice(games, size=num_games, replace=False)
+    else:
+        games_for_training = games
+    
+    # Go over games and do preprocessing
+    print('PREPROCESSING THE DATA.....')
+    LEN_OF_DATA = 777
+    game_dataframe = pd.DataFrame(columns=range(LEN_OF_DATA))
+    for game in games_for_training:
         # Turn string into move + eval
         this_move_list = parse_game_string_to_list(game)
         # print('move list: ')
         # print(this_move_list)
+    
+        if this_move_list != []:
 
-        # # Turn move list into positional encoding list
-        # this_positional_encoding_eval_list = convert_game_to_pos_encodings(this_move_list)
-        # print('pos encoding list: ')
-        # print(this_positional_encoding_eval_list)
+            # Turn move list into positional encoding list
+            this_positional_encoding_eval_list = convert_game_to_pos_encodings(this_move_list)
+            # print('pos encoding list length: ')
+            # print(len(this_positional_encoding_eval_list))
+            
 
-        save_move_list_to_csv(move_list=this_move_list, data_filepath='../data/small_games.csv')
+            # Append move list to pd dataframe
+            for board_encoding, stockfish_eval in this_positional_encoding_eval_list:
+                if '#' in str(stockfish_eval):
+                    eval = -100. if '-' in str(stockfish_eval) else 100.
+                else:
+                    eval = float(stockfish_eval)
+
+                row_to_add = pd.Series(board_encoding + [eval])
+                game_dataframe = game_dataframe.append(row_to_add)
+        
+
+
+        
+
+    
+
+
+
+
+
+if __name__ == '__main__':
+    # # Get All Games
+    # games = pull_all_games('../data/eval_games.txt')
+
+    # # print(f"Here is an example game: \n{games[0]}")
+
+    # for game in games:
+    #     # Turn string into move + eval
+    #     this_move_list = parse_game_string_to_list(game)
+    #     # print('move list: ')
+    #     # print(this_move_list)
+    
+    #     if this_move_list != []:
+
+    #         # Turn move list into positional encoding list
+    #         this_positional_encoding_eval_list = convert_game_to_pos_encodings(this_move_list)
+    #         print(len(this_positional_encoding_eval_list[0][0]))
+    #         exit()
+    #         # print('pos encoding list length: ')
+    #         # print(len(this_positional_encoding_eval_list))
+            
+
+    #         save_move_list_to_csv(move_list=this_move_list, data_filepath='../data/games.csv')
+    #         exit()
+
+    data_pipeline('../data/eval_games.txt', 100)

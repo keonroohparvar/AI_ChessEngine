@@ -49,7 +49,7 @@ def load_dataset(filepath):
     be used in this file
 
     Arguments:
-        filepath (str): Location of our .csv file
+        filepath (str): Location of our .txt file with our games
     
     Output:
         array: Array of data points we will use

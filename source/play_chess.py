@@ -16,7 +16,7 @@ import tensorflow as tf
 import numpy as np
 
 # Local Imports
-from new_board import ChessBoard
+from .board import ChessBoard
 
 def find_best_move(model, board, turn):
     """

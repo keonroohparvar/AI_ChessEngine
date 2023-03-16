@@ -174,7 +174,45 @@ def data_pipeline(path_to_games_file, num_games=None):
                 row_to_add = pd.Series(board_encoding + [eval])
                 game_dataframe = game_dataframe.append(row_to_add)
         
+        
 
+def game_to_data(game_str):
+    """
+    This function will take in a game string and return a batch of data that only corresponds to 
+    this specific game.
+    """
+    # Turn string into move + eval
+    this_move_list = parse_game_string_to_list(game_str)
+    # print('move list: ')
+    # print(this_move_list)
+
+    # Turn move list into positional encoding list
+    this_positional_encoding_eval_list = convert_game_to_pos_encodings(this_move_list)
+    # print('pos encoding list length: ')
+    # print(len(this_positional_encoding_eval_list))
+
+    # Go over games and do preprocessing
+    LEN_OF_DATA = 777
+    df_cols = range(LEN_OF_DATA)
+    game_dataframe = pd.DataFrame(columns=df_cols)
+
+    # Append move list to pd dataframe
+    for board_encoding, stockfish_eval in this_positional_encoding_eval_list:
+        if '#' in str(stockfish_eval):
+            eval = -100. if '-' in str(stockfish_eval) else 100.
+        else:
+            eval = float(stockfish_eval)
+
+        row_to_add = pd.DataFrame(board_encoding + [eval])
+        row_to_add = row_to_add.T
+        row_to_add.columns = df_cols
+        game_dataframe = pd.concat([game_dataframe, row_to_add], ignore_index=True)
+    
+    y = game_dataframe.pop(game_dataframe.columns[-1])
+
+    y = y.clip(upper=15, lower=-15)
+
+    return game_dataframe, y
 
         
 

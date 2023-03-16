@@ -10,24 +10,39 @@ Date: 11/3/2022
 """
 
 # Python Imports
+import logging
 import sys
 import os
 import importlib
 import argparse
+import linecache
+import time
 
+logging.basicConfig()
+root = logging.getLogger(__name__)
+root.setLevel(logging.INFO)
+root.info('Importing packages...')
+
+# Change env variable to surpress tf logs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # or any {'0', '1', '2'}
 import tensorflow as tf
+
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 from sklearn.model_selection import train_test_split
+
+from data_handler import game_to_data
 
 # # Checks to see if running on GPU
 # tf.debugging.set_log_device_placement(True)
 
+# Do this to suppress TF warnings
+tf.autograph.set_verbosity(2)
 
 # Local Imports
 MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models')
 sys.path.append(MODEL_DIR)
-print(sys.path)
 
 def strlist_to_list(l):
     """
@@ -117,26 +132,52 @@ def train_model(training_csv, user):
             you pass in 'keon' as the user parameter, then make sure a keon/ folder exists in models/.
     """
     # HYPERPARAMETERS
-    NUM_EPOCHS = 10
-    BATCH_SIZE = 128
+    NUM_GAMES = 100
     MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models')
 
+    with open(training_csv, 'r') as f:
+        total_number_of_games = sum(1 for _ in f)
 
-    # Load in data
-    train_x, test_x, train_y, test_y = load_dataset(training_csv)
+
+    # # Load in data
+    # train_x, test_x, train_y, test_y = load_dataset(training_csv)
 
     # Retrieve model
+    root.info('Retrieving model...')
     model = get_model(user)
 
+    with tqdm(range(NUM_GAMES), unit='batch') as progress_bar:
+        progress_bar.set_description('Training the Model')
+        for game_ind in progress_bar:
+            # Random select game index 
+            chosen_game_index = np.random.randint(0, total_number_of_games)
 
+            # Pull the game at the specified random index 
+            chosen_game = linecache.getline(training_csv, chosen_game_index, module_globals=None)
 
-    # Train Model
-    model.fit(
-        x=train_x, 
-        y=train_y,
-        epochs=NUM_EPOCHS,
-        batch_size=BATCH_SIZE,
-    )
+            # Get all of the data from this game
+            this_game_x, this_game_y = game_to_data(chosen_game)
+
+            # Train Model
+            try:
+                hist = model.fit(
+                    x=this_game_x, 
+                    y=this_game_y,
+                    epochs=10,
+                    batch_size=1,
+                    verbose=0
+                )
+            except:
+                root.error(f'Error with the following data')
+                print(f'Game number: {chosen_game_index}')
+                print(f'game line: {chosen_game}')
+                print(this_game_x)
+                print(this_game_y)
+                exit()
+
+            # Get loss and log it
+            loss = hist.history['loss'][-1]
+            progress_bar.set_postfix(loss=loss)
 
     SAVE_MODEL = True
     if SAVE_MODEL:

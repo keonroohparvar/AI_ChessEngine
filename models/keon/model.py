@@ -155,6 +155,8 @@ class ChessAIModel:
         x = Conv2D(128, 3, padding='same')(board_tensor_2d)
         x = Conv2D(256, 3, padding='same')(x)
         x = Conv2D(512, 3, padding='same')(x)
+        x = Conv2D(512, 3, padding='same')(x)
+        x = Conv2D(512, 3, padding='same')(x)
         x = Flatten()(x)
 
         board_and_non_board = Concatenate()([x, non_board_tensor])

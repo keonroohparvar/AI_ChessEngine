@@ -132,7 +132,7 @@ def train_model(training_csv, user):
             you pass in 'keon' as the user parameter, then make sure a keon/ folder exists in models/.
     """
     # HYPERPARAMETERS
-    NUM_GAMES = 100
+    NUM_GAMES = 1000
     MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models')
 
     with open(training_csv, 'r') as f:

@@ -41,6 +41,7 @@ class ChessAIModel:
             return self.get_conv_model()
         
         if model_type == 'complex':
+            print('oooooo')
             return self.get_complex_model()
         
         else:
@@ -132,7 +133,7 @@ class ChessAIModel:
 
         return model
 
-    def get_complex_model(self):
+    def get_complex_model(self, batch_size=1):
         """
         This function will return a simple Tesnorflow Model() object with the architecture defined below.
         """
@@ -143,11 +144,13 @@ class ChessAIModel:
 
         INPUT_SIZE = (776,)
         inputs = Input(INPUT_SIZE)
+        BATCH_SIZE = inputs.shape[0] or batch_size
+        print(f'batch size; {BATCH_SIZE}')
 
         num_items_in_board = 12 * 8 * 8
         board_tensor, non_board_tensor = inputs[:, :num_items_in_board], inputs[:, num_items_in_board:]
 
-        board_tensor_2d = Reshape(np.array([-1, 8, 8, 12]))(board_tensor)
+        board_tensor_2d = Reshape(np.array([8, 8, 12]))(board_tensor)
 
         print(f'Board tensor reshaped: {board_tensor_2d.shape}')
 

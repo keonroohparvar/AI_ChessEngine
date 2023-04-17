@@ -69,9 +69,6 @@ def example_use_of_model(model_path, board):
 
 if __name__ == '__main__':
     board = ChessBoard()
-    model_path = '../models/keon/saved_models/long_model.h5'
+    model_path = '../models/keon/saved_models/model_example.h5'
     example_use_of_model(model_path, board)
     
-
-
-

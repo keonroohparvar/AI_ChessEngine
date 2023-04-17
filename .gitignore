@@ -4,3 +4,4 @@ __pycache__
 .idea/
 *large*.txt
 *model.h5
+*games*.csv

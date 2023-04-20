@@ -66,6 +66,8 @@ def example_use_of_model(model_path, board):
     print('The model predicts that the board evaluation is ', prediction)
     print('\n-------\n')
 
+def monte_carlo(model_path, board):
+    pass
 
 if __name__ == '__main__':
     board = ChessBoard()

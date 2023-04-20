@@ -66,10 +66,59 @@ def example_use_of_model(model_path, board):
     print('The model predicts that the board evaluation is ', prediction)
     print('\n-------\n')
 
-def monte_carlo(model_path, board):
-    pass
+# testing out monte carlo with depth of one (will expand to depth of two later)
+def monte_carlo(model_path, board, turn):
+    legal_moves = list(board.get_legal_moves())
+    original_FEN = board.get_fen()
+    model = tf.keras.models.load_model(model_path)
+
+    if turn == "white":
+        best1 = white_monte(legal_moves, original_FEN, model)
+    else:
+        best1 = black_monte(legal_moves, original_FEN, model)
+
+    return best1
+
+def white_monte(legal_moves, original_FEN, model):
+    curr_best_move_num = -100
+    curr_best_move = ""
+
+    for move in legal_moves:
+        board.make_move(str(move))
+
+        board_encoding = board.positional_encode()
+        prediction = model.predict(np.array([board_encoding]), verbose=0)[0][0]
+
+        if (prediction > curr_best_move_num):
+            curr_best_move_num = prediction
+            curr_best_move = str(move)
+
+        board.set_fen(original_FEN)
+
+    return curr_best_move
+
+def black_monte(legal_moves, original_FEN, model):
+    curr_best_move_num = 100
+    curr_best_move = ""
+    for move in legal_moves:
+        board.make_move(str(move))
+
+        board_encoding = board.positional_encode()
+        prediction = model.predict(np.array([board_encoding]), verbose=0)[0][0]
+
+        if (prediction < curr_best_move_num):
+            curr_best_move_num = prediction
+            curr_best_move = str(move)
+
+        board.set_fen(original_FEN)
+
+    return curr_best_move
 
 if __name__ == '__main__':
     board = ChessBoard()
     model_path = '../models/keon/saved_models/model_example.h5'
-    example_use_of_model(model_path, board)
+    # example_use_of_model(model_path, board)
+    board.make_move("g1h3")
+    board.make_move("g8h6")
+    print(monte_carlo(model_path, board, "white"))
+    # test_moves()

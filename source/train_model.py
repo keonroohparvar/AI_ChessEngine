@@ -137,7 +137,7 @@ def train_model(training_csv, user):
     MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models')
     
     # Create log dir and callback
-    LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models', user, 'logs') + datetime.now().strftime("%Y%m%d-%H%M%S")
+    LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models', user, 'logs/') + datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callback = keras.callbacks.TensorBoard(log_dir=LOG_DIR)
     
 

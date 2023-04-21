@@ -66,19 +66,6 @@ def example_use_of_model(model_path, board):
     print('The model predicts that the board evaluation is ', prediction)
     print('\n-------\n')
 
-# testing out monte carlo with depth of one (will expand to depth of two later)
-def monte_carlo(model_path, board, turn):
-    legal_moves = list(board.get_legal_moves())
-    original_FEN = board.get_fen()
-    model = tf.keras.models.load_model(model_path)
-
-    if turn == "white":
-        best1 = white_monte(legal_moves, original_FEN, model)
-    else:
-        best1 = black_monte(legal_moves, original_FEN, model)
-
-    return best1
-
 def white_monte(legal_moves, original_FEN, model):
     curr_best_move_num = -100
     curr_best_move = ""
@@ -95,7 +82,7 @@ def white_monte(legal_moves, original_FEN, model):
 
         board.set_fen(original_FEN)
 
-    return curr_best_move
+    return curr_best_move, curr_best_move_num
 
 def black_monte(legal_moves, original_FEN, model):
     curr_best_move_num = 100
@@ -112,13 +99,106 @@ def black_monte(legal_moves, original_FEN, model):
 
         board.set_fen(original_FEN)
 
-    return curr_best_move
+    return curr_best_move, curr_best_move_num
+
+'''
+# This was an experiment i was doing in a depth = 2 monte carlo
+def monte_carlo_two(model_path, board, turn):
+    model = tf.keras.models.load_model(model_path)
+
+    legal_moves_1 = list(board.get_legal_moves())
+    original_FEN = board.get_fen()
+
+    if turn == "white":
+        turn_2 = "black"
+    else:
+        turn_2 = "white"
+
+    for move in legal_moves_1:
+        board.make_move(str(move))
+
+        legal_moves_2 = list(board.get_legal_moves())
+        FEN_2 = board.get_fen()
+
+        best_2 = ""
+        best_2_num = 0
+
+        for move_2 in legal_moves_2:
+            if turn_2 == "white":
+                best_2, best_2_num = white_monte(legal_moves_2, original_FEN, model)
+            else:
+                best_2, best_2_num = black_monte(legal_moves_2, original_FEN, model)
+'''
+
+
+def mc_eval_board(turn, board, current_depth, max_depth):
+    """
+    this is the recursive function that will eval a board.
+    NOTE: this probably doesn't work but this is close i think hahah i did not test this sorry my kings
+    """
+
+    # Function for switching turns
+    def switch_turn(turn):
+        if turn == 'W':
+            return 'B'
+        else:
+            return 'W'
+
+    # Get current evaluation
+    curr_eval = None # evaluation of the "board" parameter
+
+
+
+    # CHECK IF WE ARE AT MAX DEPTH - IF WE DONT DO THIS, WE RECURSE FOREVER
+    if max_depth == current_depth:
+        return None # evaluation of our current board
+
+    # Get all possible boards
+    possible_boards = None # all possible boards from this board
+
+    # Handle cases differently for both teams ->
+
+    # If turn is W, we will return the max of the options (because white wants to maximize)
+    if turn == 'W':
+        other_turn = 'B'
+        return curr_eval + max([mc_eval_board(other_turn, i, current_depth + 1, max_depth) for i in possible_boards])
+
+    # If turn is B, we will return the min of the options (because black wants to minimize)
+    if turn == 'B':
+        other_turn = 'W'
+        return curr_eval + min([mc_eval_board(other_turn, i, current_depth + 1, max_depth) for i in possible_boards])
+
+
+def monte_carlo(board, max_depth):
+    turn = 'W'  # if we are white, 'B' else
+
+    # --- GO through all the boards ---
+
+    legal_moves = list(board.get_legal_moves())
+    original_FEN = board.get_fen()
+
+    possible_boards = []  # list of all possible boards that can be made at moment
+    for move in legal_moves:
+        board.make_move(str(move))
+        possible_boards.append(board)
+        board.set_fen(original_FEN)
+
+    # --- GO through possibilities and do MCTS ---
+
+    values = []
+    for poss_board in possible_boards:
+        this_value = mc_eval_board(poss_board, current_depth=0, max_depth=max_depth)
+        values.append(this_value)
+
+    # Choose the board that yields the highest value
+    best_board = max(values)
+    return best_board
+
 
 if __name__ == '__main__':
     board = ChessBoard()
     model_path = '../models/keon/saved_models/model_example.h5'
     # example_use_of_model(model_path, board)
-    board.make_move("g1h3")
-    board.make_move("g8h6")
-    print(monte_carlo(model_path, board, "white"))
-    # test_moves()
+    # board.make_move("g1h3")
+    # board.make_move("g8h6")
+    # print(monte_carlo_two(model_path, board, "white"))

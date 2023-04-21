@@ -131,11 +131,13 @@ def monte_carlo_two(model_path, board, turn):
 '''
 
 
-def mc_eval_board(turn, board, current_depth, max_depth):
+def mc_eval_board(turn, board, current_depth, max_depth, model_path):
     """
     this is the recursive function that will eval a board.
-    NOTE: this probably doesn't work but this is close i think hahah i did not test this sorry my kings
+    NOTE: this probably doesn't work but this is close I think haha I did not test this sorry my kings
     """
+
+    model = tf.keras.models.load_model(model_path)
 
     # Function for switching turns
     def switch_turn(turn):
@@ -145,16 +147,21 @@ def mc_eval_board(turn, board, current_depth, max_depth):
             return 'W'
 
     # Get current evaluation
-    curr_eval = None # evaluation of the "board" parameter
+    board_encoding = board.positional_encode()
+    curr_eval = model.predict(np.array([board_encoding]), verbose=0)[0][0] # evaluation of the "board" parameter
 
-
-
-    # CHECK IF WE ARE AT MAX DEPTH - IF WE DONT DO THIS, WE RECURSE FOREVER
+    # CHECK IF WE ARE AT MAX DEPTH - IF WE DON'T DO THIS, WE RECURSE FOREVER
     if max_depth == current_depth:
-        return None # evaluation of our current board
+        return curr_eval # evaluation of our current board
 
     # Get all possible boards
-    possible_boards = None # all possible boards from this board
+    legal_moves = list(board.get_legal_moves())
+    original_FEN = board.get_fen()
+    possible_boards = []  # list of all possible boards that can be made at moment
+    for move in legal_moves:
+        board.make_move(str(move))
+        possible_boards.append(board)
+        board.set_fen(original_FEN)
 
     # Handle cases differently for both teams ->
 
@@ -202,3 +209,4 @@ if __name__ == '__main__':
     # board.make_move("g1h3")
     # board.make_move("g8h6")
     # print(monte_carlo_two(model_path, board, "white"))
+    print()

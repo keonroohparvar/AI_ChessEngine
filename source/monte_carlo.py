@@ -66,6 +66,63 @@ def example_use_of_model(model_path, board):
     print('The model predicts that the board evaluation is ', prediction)
     print('\n-------\n')
 
+def mc_eval_board(turn, board, current_depth, max_depth):
+    """
+    this is the recursive function that will eval a board.
+    NOTE: this probably doesn't work but this is close i think hahah i did not test this sorry my kings
+
+    # Function for switching turns
+    def switch_turn(turn):
+        if turn == 'W':
+            return 'B'
+        else:
+            return 'W'
+
+    # Get current evaluation
+    curr_eval = evaluation of the "board" parameter
+    
+    
+
+    # CHECK IF WE ARE AT MAX DEPTH - IF WE DONT DO THIS, WE RECURSE FOREVER
+    if max_depth == current_depth:
+        return evaluation of our current board
+    
+    # Get all possible boards
+    possible_boards = all possible boards from this board
+    
+    # Handle cases differently for both teams ->
+
+    # If turn is W, we will return the max of the options (because white wants to maximize)
+    if turn == 'W':
+        other_turn = 'B'
+        return curr_eval + max([mc_eval_board(other_turn, i, current_depth + 1, max_depth) for i in possible_boards])
+    
+    # If turn is B, we will return the min of the options (because black wants to minimize)
+    if turn == 'B':
+        other_turn = 'W'
+        return curr_eval + min([mc_eval_board(other_turn, i, current_depth + 1, max_depth) for i in possible_boards])
+        
+    """
+    pass
+
+def monte_carlo(board, max_depth):
+    """
+    turn = 'W' (if we are white, 'B' else)
+
+    # GO thru all the boards
+    possible_boards = all possible boards that we can move to
+
+    # GO through possibilities and do MCTS
+    values = []
+    for board in possible_boards:
+        this_value = mc_eval_board(board, current_depth=0, max_depth=max_depth)
+        values.append(this_value)
+
+    # Choose the board that yields the highest value
+    best_board = max(values)
+    """
+    pass
+
 
 if __name__ == '__main__':
     board = ChessBoard()

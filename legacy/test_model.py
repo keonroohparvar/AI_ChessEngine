@@ -135,16 +135,16 @@ def train_model(training_csv, user):
         basic_game_obj = ChessBoard()
         basic_game = basic_game_obj.positional_encode()
         basic_game_fen = basic_game_obj.get_fen()
-        print(f'fen: {basic_game_fen}')
-        print(len(basic_game))
-        print(basic_game[:12])
-        print(f'the rook piece is : {ChessBoard().piece_dict["r"]}')
-        print(basic_game[12:24])
-        print(f'the horsey: {basic_game_obj.piece_dict["n"]}')
-        print(f'basic game len: {len(basic_game)}')
+        # print(f'fen: {basic_game_fen}')
+        # print(len(basic_game))
+        # print(basic_game[:12])
+        # print(f'the rook piece is : {ChessBoard().piece_dict["r"]}')
+        # print(basic_game[12:24])
+        # print(f'the horsey: {basic_game_obj.piece_dict["n"]}')
+        # print(f'basic game len: {len(basic_game)}')
 
         print('\n\n-----\n\n')
-        print('RUnning on model!')
+        print('Running on model!')
 
         from keras.layers import Input, Dense, Conv2D, Flatten, Concatenate, Reshape
 
@@ -156,21 +156,34 @@ def train_model(training_csv, user):
         num_items_in_board = 12 * 8 * 8
         board_tensor, non_board_tensor = inputs[:, :num_items_in_board], inputs[:, num_items_in_board:]
 
+        print(f'board tensor shape; {board_tensor.shape}')
+
         board_tensor_2d = Reshape(np.array([8, 8, 12]))(board_tensor)
         
-        for i in range(12):
-            print(f'\n----\ni is {i}')
-            print('this slice of board: ')
-            print(board_tensor_2d[0, :, :, i])
+        # for i in range(12):
+        #     print(f'\n----\ni is {i}')
+        #     print('this slice of board: ')
+        #     print(board_tensor_2d[0, :, :, i])
      
         # # Train Model
-        # hist = model.fit(
-        #     x=np.array([basic_game]), 
-        #     y=np.array([0]),
-        #     epochs=10,
-        #     batch_size=1,
-        #     verbose=0
-        # )
+        hist = model.fit(
+            x=np.array([basic_game]), 
+            y=np.array([0.]),
+            epochs=10,
+            batch_size=1,
+            verbose=0
+        )
+
+        pred = model.predict(np.array([basic_game]))
+        print(f'pred is: {pred}')
+
+        move = str(list(basic_game_obj.get_legal_moves())[0])
+        basic_game_obj.make_move(move)
+        basic_game_obj.print_board()
+        new_PE = basic_game_obj.positional_encode()
+        new_pred = model.predict(np.array([new_PE]))
+        print(f'new pred: {new_pred}')
+
         exit()
 
         # Get loss and log it
@@ -198,3 +211,22 @@ if __name__ == '__main__':
     # train_model(args.csv_location, args.model_dir)
 
     train_model('/Users/keonroohparvar/Dev/SPD_Chessbot/data/games.csv', 'keon')
+
+    # piece_dict = {
+    #     'x': [1, 0, 0, 0],
+    #     'y': [0, 1, 0, 0],
+    #     'z': [0, 0, 1, 0],
+    #     'a': [0, 0, 0, 1],
+    #     '.': [0, 0, 0, 0]
+    # }
+    # s = 'xxxyyyz.z'
+    # out_arr = []
+    # for c in s:
+    #     out_arr = out_arr + piece_dict[c]
+
+    # out_arr = np.array(out_arr)
+    # out_arr_reshaped = out_arr.reshape([3,3,4])
+    # print(out_arr_reshaped)
+    # print(out_arr_reshaped.shape)
+    # print('----')
+    # print(out_arr_reshaped[:, :, 2])

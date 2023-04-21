@@ -145,29 +145,28 @@ class ChessAIModel:
         INPUT_SIZE = (776,)
         inputs = Input(INPUT_SIZE)
         BATCH_SIZE = inputs.shape[0] or batch_size
-        print(f'batch size; {BATCH_SIZE}')
 
         num_items_in_board = 12 * 8 * 8
         board_tensor, non_board_tensor = inputs[:, :num_items_in_board], inputs[:, num_items_in_board:]
 
         board_tensor_2d = Reshape(np.array([8, 8, 12]))(board_tensor)
 
-        print(f'Board tensor reshaped: {board_tensor_2d.shape}')
-
         # Convolude on board data
-        x = Conv2D(128, 3, padding='same')(board_tensor_2d)
-        x = Conv2D(256, 3, padding='same')(x)
-        x = Conv2D(512, 3, padding='same')(x)
-        x = Conv2D(512, 3, padding='same')(x)
-        x = Conv2D(512, 3, padding='same')(x)
+        x = Conv2D(128, 3, padding='same', activation='relu')(board_tensor_2d)
+        x = Conv2D(256, 3, padding='same', activation='relu')(x)
+        x = Conv2D(512, 3, padding='same', activation='relu')(x)
         x = Flatten()(x)
 
+        # add the output of convolutions and our non_board_tensor information together
         board_and_non_board = Concatenate()([x, non_board_tensor])
-        x = Dense(2000, activation='relu')(board_and_non_board)
-        x = Dense(1000, activation='relu')(x)
-        x = Dense(500, activation='relu')(x)
-        x = Dense(500, activation='relu')(x)
-        x = Dense(500, activation='relu')(x)
+
+        # Normal Deep Network onwards
+        x = Dense(1024, activation='relu')(board_and_non_board)
+        x = Dense(512, activation='relu')(x)
+        x = Dense(256, activation='tanh')(x)
+        x = Dense(128, activation='tanh')(x)
+        x = Dense(64, activation='tanh')(x)
+        x = Dense(32, activation='tanh')(x)
         outputs = Dense(1, activation='linear')(x)
 
         model = tf.keras.Model(inputs=inputs, outputs=outputs, name='keons_conv_model')

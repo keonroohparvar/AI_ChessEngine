@@ -28,6 +28,10 @@ def find_best_move(model, board, turn):
         board: A PyChess board
         turn: Either 'white' or 'black'
     """
+    prev_PE = board.positional_encode()
+    print(f'Original PE: {prev_PE}')
+    print(f'Original PE len: {len(prev_PE)}')
+    
     # Get the starting FEN to return back
     starting_fen = board.get_fen()
 
@@ -50,7 +54,8 @@ def find_best_move(model, board, turn):
 
         # Predict the stockfish evaluation of the board after move is made
         this_board_encoding = board.positional_encode()
-        this_prediction = model.predict(np.array([this_board_encoding]), verbose=0)
+        this_prediction = model.predict(np.array([this_board_encoding]), verbose=0)[0][0]
+        prev_PE = this_board_encoding
         move_predictions.append(this_prediction)
 
         # Reset board so we have a fresh board for next iteration
@@ -107,9 +112,6 @@ def play_game(board, model1, model2, print_board):
     return winning_color, move_list
 
 def main(model1_path, model2_path, print_board):
-    # MODEL1_PATH = '../models/corey/saved_models/model7.h5'
-    # MODEL2_PATH = '../models/keon/saved_models/model0.h5'
-
     model1 = tf.keras.models.load_model(model1_path)
     model2 = tf.keras.models.load_model(model2_path) 
 
@@ -119,11 +121,17 @@ def main(model1_path, model2_path, print_board):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('model1', type=str, help='Path to the model that will play as White.')
-    parser.add_argument('model2', type=str, help='Path to the model that will play as Black.')
+    parser.add_argument('model1', type=str, help='Path to the model that will play as White.', default=None)
+    parser.add_argument('model2', type=str, help='Path to the model that will play as Black.', default=None)
     parser.add_argument('--print_board', type=bool, default=True)
 
     args = parser.parse_args()
+
+    # For hard coding model paths for testing
+    HARD_CODE_MODELS = True
+    if HARD_CODE_MODELS:
+        args.model1 = '../models/keon/saved_models/model_example.h5'
+        args.model2 = '../models/keon/saved_models/model_example.h5'
 
     if not args.model1 or (not os.path.isfile(args.model1)):
         print('ERROR - Did not provide a correct location to the the first model.')

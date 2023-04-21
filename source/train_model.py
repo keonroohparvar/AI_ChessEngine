@@ -16,7 +16,7 @@ import os
 import importlib
 import argparse
 import linecache
-import time
+from datetime import datetime
 
 logging.basicConfig()
 root = logging.getLogger(__name__)
@@ -26,6 +26,7 @@ root.info('Importing packages...')
 # Change env variable to surpress tf logs
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # or any {'0', '1', '2'}
 import tensorflow as tf
+import keras
 
 import numpy as np
 import pandas as pd
@@ -132,8 +133,13 @@ def train_model(training_csv, user):
             you pass in 'keon' as the user parameter, then make sure a keon/ folder exists in models/.
     """
     # HYPERPARAMETERS
-    NUM_GAMES = 1000
+    NUM_GAMES = 100
     MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models')
+    
+    # Create log dir and callback
+    LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models', user, 'logs') + datetime.now().strftime("%Y%m%d-%H%M%S")
+    tensorboard_callback = keras.callbacks.TensorBoard(log_dir=LOG_DIR)
+    
 
     with open(training_csv, 'r') as f:
         total_number_of_games = sum(1 for _ in f)
@@ -165,7 +171,8 @@ def train_model(training_csv, user):
                     y=this_game_y,
                     epochs=10,
                     batch_size=1,
-                    verbose=0
+                    verbose=0,
+                    callbacks=[tensorboard_callback]
                 )
             except:
                 root.error(f'Error with the following data')

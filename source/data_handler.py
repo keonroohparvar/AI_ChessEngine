@@ -211,6 +211,7 @@ def game_to_data(game_str):
     y = game_dataframe.pop(game_dataframe.columns[-1])
 
     y = y.clip(upper=15, lower=-15)
+    y = y / 15
 
     return game_dataframe, y
 

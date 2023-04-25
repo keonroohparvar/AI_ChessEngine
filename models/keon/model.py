@@ -140,10 +140,8 @@ class ChessAIModel:
         # Create Model
         model = tf.keras.models.Sequential()
 
-        # Add Layer
-
         INPUT_SIZE = (776,)
-        inputs = Input(INPUT_SIZE)
+        inputs = Input(shape=INPUT_SIZE)
         BATCH_SIZE = inputs.shape[0] or batch_size
 
         num_items_in_board = 12 * 8 * 8
@@ -152,24 +150,24 @@ class ChessAIModel:
         board_tensor_2d = Reshape(np.array([8, 8, 12]))(board_tensor)
 
         # Convolude on board data
-        x = Conv2D(128, 3, padding='same', activation='relu')(board_tensor_2d)
-        x = Conv2D(256, 3, padding='same', activation='relu')(x)
-        x = Conv2D(512, 3, padding='same', activation='relu')(x)
+        x = Conv2D(32, 3, padding='same', activation='relu')(board_tensor_2d)
+        x = Conv2D(64, 3, padding='same', activation='relu')(x)
         x = Flatten()(x)
+
+        print(x.shape)
 
         # add the output of convolutions and our non_board_tensor information together
         board_and_non_board = Concatenate()([x, non_board_tensor])
 
         # Normal Deep Network onwards
-        x = Dense(1024, activation='relu')(board_and_non_board)
-        x = Dense(512, activation='relu')(x)
-        x = Dense(256, activation='tanh')(x)
+        x = Dense(512, activation='relu')(board_and_non_board)
+        x = Dense(256, activation='relu')(x)
         x = Dense(128, activation='tanh')(x)
         x = Dense(64, activation='tanh')(x)
         x = Dense(32, activation='tanh')(x)
         outputs = Dense(1, activation='linear')(x)
 
-        model = tf.keras.Model(inputs=inputs, outputs=outputs, name='keons_conv_model')
+        model = tf.keras.Model(inputs=inputs, outputs=outputs)
 
         # Create optimizer
         opt = Adam(learning_rate=self.learning_rate)

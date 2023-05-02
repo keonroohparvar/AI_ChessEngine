@@ -21,7 +21,7 @@ class ChessAIModel:
     def __init__(self, learning_rate=1e-3):
         self.learning_rate = learning_rate
     
-    def get_model(self, model_type='complex'):
+    def get_model(self, model_type='just_board'):
         """
         This will return a Tensorflow Neural Network Object that can be used to train, and its
         architecture will be defined by the model_type parameter.
@@ -44,6 +44,9 @@ class ChessAIModel:
             print('oooooo')
             return self.get_complex_model()
         
+        if model_type == 'just_board':
+            return self.get_just_board_model()
+
         else:
             raise NotImplementedError
     
@@ -179,4 +182,52 @@ class ChessAIModel:
             )
 
         return model
+
+    def get_just_board_model(self, batch_size=1):
+        """
+        This function will return a simple Tesnorflow Model() object with the architecture defined below.
+        """
+        # Create Model
+        model = tf.keras.models.Sequential()
+
+        LEARNING_RATE = 1e-4
+        self.learning_rate = LEARNING_RATE
+
+        INPUT_SIZE = (776,)
+        inputs = Input(shape=INPUT_SIZE)
+        BATCH_SIZE = inputs.shape[0] or batch_size
+
+        num_items_in_board = 12 * 8 * 8
+        board_tensor, non_board_tensor = inputs[:, :num_items_in_board], inputs[:, num_items_in_board:]
+
+        board_tensor_2d = Reshape(np.array([8, 8, 12]))(board_tensor)
+
+        # Convolude on board data
+        x = Conv2D(32, 5, padding='same', activation='relu')(board_tensor_2d)
+        x = Conv2D(64, 5, padding='same', activation='relu')(x)
+        x = Conv2D(128, 5, padding='same', activation='relu')(x)
+        x = Flatten()(x)
+
+        # Normal Deep Network onwards
+        x = Dense(512, activation='relu')(x)
+        x = Dense(256, activation='relu')(x)
+        x = Dense(128, activation='relu')(x)
+        x = Dense(64, activation='relu')(x)
+        x = Dense(32, activation='relu')(x)
+        outputs = Dense(1, activation='tanh')(x)
+
+        model = tf.keras.Model(inputs=inputs, outputs=outputs)
+
+        # Create optimizer
+        opt = Adam(learning_rate=self.learning_rate)
+
+        # Compile model
+        model.compile(
+            optimizer = opt,
+            loss='mae',
+            )
+
+        return model
+
+
 

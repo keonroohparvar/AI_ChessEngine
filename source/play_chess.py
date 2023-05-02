@@ -29,8 +29,8 @@ def find_best_move(model, board, turn):
         turn: Either 'white' or 'black'
     """
     prev_PE = board.positional_encode()
-    print(f'Original PE: {prev_PE}')
-    print(f'Original PE len: {len(prev_PE)}')
+    # print(f'Original PE: {prev_PE}')
+    # print(f'Original PE len: {len(prev_PE)}')
     
     # Get the starting FEN to return back
     starting_fen = board.get_fen()
@@ -55,7 +55,7 @@ def find_best_move(model, board, turn):
         # Predict the stockfish evaluation of the board after move is made
         this_board_encoding = board.positional_encode()
         this_prediction = model.predict(np.array([this_board_encoding]), verbose=0)[0][0]
-        prev_PE = this_board_encoding
+        # print(f'pred: {this_prediction}')
         move_predictions.append(this_prediction)
 
         # Reset board so we have a fresh board for next iteration
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # For hard coding model paths for testing
-    HARD_CODE_MODELS = True
+    HARD_CODE_MODELS = False
     if HARD_CODE_MODELS:
         args.model1 = '../models/keon/saved_models/model_example.h5'
         args.model2 = '../models/keon/saved_models/model_example.h5'

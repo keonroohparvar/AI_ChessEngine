@@ -133,7 +133,8 @@ def train_model(training_csv, user):
             you pass in 'keon' as the user parameter, then make sure a keon/ folder exists in models/.
     """
     # HYPERPARAMETERS
-    NUM_GAMES = 100
+    NUM_BATCHES_TO_TRAIN = 100
+    NUM_GAMES_PER_BATCH = 10
     MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'models')
     
     # Create log dir and callback
@@ -152,28 +153,69 @@ def train_model(training_csv, user):
     root.info('Retrieving model...')
     model = get_model(user)
 
-    with tqdm(range(NUM_GAMES), unit='batch') as progress_bar:
+    with tqdm(range(NUM_BATCHES_TO_TRAIN), unit='batch') as progress_bar:
         progress_bar.set_description('Training the Model')
         for game_ind in progress_bar:
-            # Random select game index 
-            chosen_game_index = np.random.randint(0, total_number_of_games)
+            this_batch_x, this_batch_y = None, None
 
-            # Pull the game at the specified random index 
-            chosen_game = linecache.getline(training_csv, chosen_game_index, module_globals=None)
+            for _ in range(NUM_GAMES_PER_BATCH):
+                # Random select game index 
+                chosen_game_index = np.random.randint(0, total_number_of_games)
 
-            # Get all of the data from this game
-            this_game_x, this_game_y = game_to_data(chosen_game)
+                # Pull the game at the specified random index 
+                chosen_game = linecache.getline(training_csv, chosen_game_index, module_globals=None)
+
+                # Get all of the data from this game
+                this_game_x, this_game_y = game_to_data(chosen_game)
+
+                if this_batch_x is None or this_batch_y is None:
+                    this_batch_x = this_game_x
+                    this_batch_y = this_game_y
+
+                # Append this game's information to our batches TODO
+                this_batch_x = pd.concat([this_batch_x, this_game_x], ignore_index=True)
+                this_batch_y = pd.concat([this_batch_y, this_game_y], ignore_index=True)
+
+            if game_ind == 0:
+                print(this_batch_x)
+                print('----\n')
+                print(this_batch_y)
+                print(f'y min and max: {this_batch_y.min()} $ {this_batch_y.max()}')
 
             # Train Model
             try:
-                hist = model.fit(
-                    x=this_game_x, 
-                    y=this_game_y,
-                    epochs=10,
-                    batch_size=1,
-                    verbose=0,
-                    callbacks=[tensorboard_callback]
-                )
+                if game_ind % 50 == 0:
+                    hist = model.fit(
+                        x=this_batch_x, 
+                        y=this_batch_y,
+                        epochs=100,
+                        batch_size=64,
+                        verbose=1,
+                        callbacks=[tensorboard_callback]
+                    )
+                else:
+                    hist = model.fit(
+                        x=this_batch_x, 
+                        y=this_batch_y,
+                        epochs=5,
+                        batch_size=64,
+                        verbose=0
+                    )
+
+
+                # # COMMENT BELOW FOR TESTING
+                # print(f'this game x: {this_game_x}')
+                # print(f'this game y: {this_game_y}')
+                # hist = model.fit(
+                #     x=this_game_x, 
+                #     y=this_game_y,
+                #     epochs=50,
+                #     batch_size=8,
+                #     verbose=0,
+                # )
+                # exit()
+                # # END TESTING
+
             except:
                 root.error(f'Error with the following data')
                 print(f'Game number: {chosen_game_index}')
@@ -183,6 +225,8 @@ def train_model(training_csv, user):
                 exit()
 
             # Get loss and log it
+            if game_ind == 0:
+                print(hist.history['loss'])
             loss = hist.history['loss'][-1]
             progress_bar.set_postfix(loss=loss)
 

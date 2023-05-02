@@ -131,12 +131,12 @@ def monte_carlo_two(model_path, board, turn):
 '''
 
 
-def mc_eval_board(turn, board, current_depth, max_depth, model_path):
+def mc_eval_board(turn, board, current_depth, max_depth):
     """
     this is the recursive function that will eval a board.
     NOTE: this probably doesn't work but this is close I think haha I did not test this sorry my kings
     """
-
+    model_path = '../models/keon/saved_models/model_example.h5'
     model = tf.keras.models.load_model(model_path)
 
     # Function for switching turns
@@ -194,7 +194,7 @@ def monte_carlo(board, max_depth):
 
     values = []
     for poss_board in possible_boards:
-        this_value = mc_eval_board(poss_board, current_depth=0, max_depth=max_depth)
+        this_value = mc_eval_board(turn, poss_board, current_depth=0, max_depth=max_depth)
         values.append(this_value)
 
     # Choose the board that yields the highest value
@@ -204,9 +204,9 @@ def monte_carlo(board, max_depth):
 
 if __name__ == '__main__':
     board = ChessBoard()
-    model_path = '../models/keon/saved_models/model_example.h5'
+    # model_path = '../models/keon/saved_models/model_example.h5'
     # example_use_of_model(model_path, board)
     # board.make_move("g1h3")
     # board.make_move("g8h6")
     # print(monte_carlo_two(model_path, board, "white"))
-    print()
+    print(monte_carlo(board, 2))

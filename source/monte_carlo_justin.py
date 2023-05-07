@@ -68,18 +68,21 @@ def example_use_of_model(model_path, board):
 
 
 def mc_eval_board(turn, board, current_depth, max_depth):
+    model_path = '../models/keon/saved_models/model_example.h5'
+    model = tf.keras.models.load_model(model_path)
     def switch_turn(turn):
         if turn == 'W':
             return 'B'
         else:
             return 'W'
 
-    curr_eval = evaluation
+    board_encoding = board.positional_encode
+    prediction = model.predict(np.array([board_encoding]), verbose=0)[0][0]
 
     if max_depth == current_depth:
-        return evaluation
+        return prediction
 
-    possible_boards = all
+    possible_boards = board.
 
     if turn == 'W':
         other_turn = 'B'

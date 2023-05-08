@@ -82,7 +82,8 @@ def mc_eval_board(turn, board, current_depth, max_depth):
     if max_depth == current_depth:
         return prediction
 
-    possible_boards = board.
+    possible_moves = board.
+    possible_boards =
 
     if turn == 'W':
         other_turn = 'B'

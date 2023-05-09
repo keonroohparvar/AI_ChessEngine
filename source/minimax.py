@@ -66,7 +66,7 @@ def example_use_of_model(model_path, board):
     print('The model predicts that the board evaluation is ', prediction)
     print('\n-------\n')
 
-def mc_eval_board(turn, board, model, current_depth, max_depth):
+def mm_eval_board(turn, board, model, current_depth, max_depth):
     """
     This is the recursive function that will evaluate a board.
     """
@@ -90,14 +90,14 @@ def mc_eval_board(turn, board, model, current_depth, max_depth):
     # Handle cases for either White or Black
     if turn == "W":
         other_turn = "B"
-        return this_evaluation + min([mc_eval_board(other_turn, sub_board, model, current_depth+1, max_depth) for sub_board in possible_boards])
+        return this_evaluation + min([mm_eval_board(other_turn, sub_board, model, current_depth+1, max_depth) for sub_board in possible_boards])
 
     if turn == "B":
         other_turn = "W"
-        return this_evaluation + max([mc_eval_board(other_turn, sub_board, model, current_depth+1, max_depth) for sub_board in possible_boards])
+        return this_evaluation + max([mm_eval_board(other_turn, sub_board, model, current_depth+1, max_depth) for sub_board in possible_boards])
 
 
-def monte_carlo(turn, board, model, max_depth):
+def minimax(turn, board, model, max_depth):
     # Get all possible boards from this point
     original_fen = board.get_fen()
     legal_moves = list(board.get_legal_moves())
@@ -112,7 +112,7 @@ def monte_carlo(turn, board, model, max_depth):
     values = []
     # print(f'number of boards: {len(possible_boards)}')
     for board in possible_boards:
-        this_value = mc_eval_board(turn, board, model, current_depth=1, max_depth=max_depth)
+        this_value = mm_eval_board(turn, board, model, current_depth=1, max_depth=max_depth)
         # print(f'this val: {this_value}')
         values.append(this_value)
 
@@ -124,7 +124,7 @@ def monte_carlo(turn, board, model, max_depth):
     
     return best_move
 
-def find_best_move_mcts(model, board, turn):
+def find_best_move_minimax(model, board, turn):
     """
     This function finds the best move predicted by a model by looking at all of the 
     possible moves and chooisng the one that the model predicts yields the best position.
@@ -139,7 +139,7 @@ def find_best_move_mcts(model, board, turn):
     if len(legal_moves) == 0:
         return -1
 
-    best_move = monte_carlo(turn, board, model, max_depth=2)
+    best_move = minimax(turn, board, model, max_depth=2)
 
     return best_move
 

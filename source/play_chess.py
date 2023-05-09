@@ -17,7 +17,7 @@ import numpy as np
 
 # Local Imports
 from board import ChessBoard
-from monte_carlo import find_best_move_mcts
+from minimax import find_best_move_minimax
 
 def find_best_move(model, board, turn):
     """
@@ -88,9 +88,9 @@ def play_game(board, model1, model2, print_board):
             print('\n------\n')
         
         model_to_move = model1 if turn == 'W' else model2
-        USE_MCTS = True
-        if USE_MCTS:
-            best_move_prediction = find_best_move_mcts(model_to_move, board, turn)
+        USE_MINIMAX = False
+        if USE_MINIMAX:
+            best_move_prediction = find_best_move_minimax(model_to_move, board, turn)
         else:
             best_move_prediction = find_best_move(model_to_move, board, turn)
 

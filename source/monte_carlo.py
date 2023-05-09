@@ -66,63 +66,82 @@ def example_use_of_model(model_path, board):
     print('The model predicts that the board evaluation is ', prediction)
     print('\n-------\n')
 
-def mc_eval_board(turn, board, current_depth, max_depth):
+def mc_eval_board(turn, board, model, current_depth, max_depth):
     """
-    this is the recursive function that will eval a board.
-    NOTE: this probably doesn't work but this is close i think hahah i did not test this sorry my kings
-
-    # Function for switching turns
-    def switch_turn(turn):
-        if turn == 'W':
-            return 'B'
-        else:
-            return 'W'
-
-    # Get current evaluation
-    curr_eval = evaluation of the "board" parameter
-    
-    
-
-    # CHECK IF WE ARE AT MAX DEPTH - IF WE DONT DO THIS, WE RECURSE FOREVER
-    if max_depth == current_depth:
-        return evaluation of our current board
-    
-    # Get all possible boards
-    possible_boards = all possible boards from this board
-    
-    # Handle cases differently for both teams ->
-
-    # If turn is W, we will return the max of the options (because white wants to maximize)
-    if turn == 'W':
-        other_turn = 'B'
-        return curr_eval + max([mc_eval_board(other_turn, i, current_depth + 1, max_depth) for i in possible_boards])
-    
-    # If turn is B, we will return the min of the options (because black wants to minimize)
-    if turn == 'B':
-        other_turn = 'W'
-        return curr_eval + min([mc_eval_board(other_turn, i, current_depth + 1, max_depth) for i in possible_boards])
-        
+    This is the recursive function that will evaluate a board.
     """
-    pass
+    this_evaluation = model.predict(np.array([board.positional_encode()]), verbose=0)[0][0]
+    # print(f'This eval: {this_evaluation}')
 
-def monte_carlo(board, max_depth):
-    """
-    turn = 'W' (if we are white, 'B' else)
+    # Check if we are at the bottom - then, we are done
+    if current_depth >= max_depth:
+        return this_evaluation
 
-    # GO thru all the boards
-    possible_boards = all possible boards that we can move to
+    # Get all possible boards from this point
+    starter_board_fen = board.get_fen()
+    legal_moves = list(board.get_legal_moves())
+    possible_boards = []
+    for legal_move in legal_moves:
+        new_board = ChessBoard()
+        new_board.set_fen(starter_board_fen)
+        new_board.make_move(str(legal_move))
+        possible_boards.append(new_board)
 
-    # GO through possibilities and do MCTS
+    # Handle cases for either White or Black
+    if turn == "W":
+        other_turn = "B"
+        return this_evaluation + min([mc_eval_board(other_turn, sub_board, model, current_depth+1, max_depth) for sub_board in possible_boards])
+
+    if turn == "B":
+        other_turn = "W"
+        return this_evaluation + max([mc_eval_board(other_turn, sub_board, model, current_depth+1, max_depth) for sub_board in possible_boards])
+
+
+def monte_carlo(turn, board, model, max_depth):
+    # Get all possible boards from this point
+    original_fen = board.get_fen()
+    legal_moves = list(board.get_legal_moves())
+    possible_boards = []
+    for legal_move in legal_moves:
+        new_board = ChessBoard()
+        new_board.set_fen(original_fen)
+        new_board.make_move(str(legal_move))
+        possible_boards.append(new_board)
+
+    # Go through possibilities and do MCTS
     values = []
+    # print(f'number of boards: {len(possible_boards)}')
     for board in possible_boards:
-        this_value = mc_eval_board(board, current_depth=0, max_depth=max_depth)
+        this_value = mc_eval_board(turn, board, model, current_depth=1, max_depth=max_depth)
+        # print(f'this val: {this_value}')
         values.append(this_value)
 
     # Choose the board that yields the highest value
-    best_board = max(values)
-    """
-    pass
+    if turn == 'W':
+        best_move = legal_moves[np.argmax(values)]
+    else:
+        best_move = legal_moves[np.argmin(values)]
+    
+    return best_move
 
+def find_best_move_mcts(model, board, turn):
+    """
+    This function finds the best move predicted by a model by looking at all of the 
+    possible moves and chooisng the one that the model predicts yields the best position.
+
+    Args:
+        model: The trained Tensorflow's Keras model
+        board: A PyChess board
+        turn: Either 'W' or 'B'
+    """
+    legal_moves = list(board.get_legal_moves())
+
+    if len(legal_moves) == 0:
+        return -1
+
+    best_move = monte_carlo(turn, board, model, max_depth=2)
+
+    return best_move
 
 if __name__ == '__main__':
     board = ChessBoard()

@@ -17,6 +17,7 @@ import numpy as np
 
 # Local Imports
 from board import ChessBoard
+from minimax import find_best_move_minimax
 
 def find_best_move(model, board, turn):
     """
@@ -26,12 +27,8 @@ def find_best_move(model, board, turn):
     Args:
         model: The trained Tensorflow's Keras model
         board: A PyChess board
-        turn: Either 'white' or 'black'
+        turn: Either 'W' or 'B'
     """
-    prev_PE = board.positional_encode()
-    # print(f'Original PE: {prev_PE}')
-    # print(f'Original PE len: {len(prev_PE)}')
-    
     # Get the starting FEN to return back
     starting_fen = board.get_fen()
 
@@ -54,6 +51,7 @@ def find_best_move(model, board, turn):
 
         # Predict the stockfish evaluation of the board after move is made
         this_board_encoding = board.positional_encode()
+
         this_prediction = model.predict(np.array([this_board_encoding]), verbose=0)[0][0]
         # print(f'pred: {this_prediction}')
         move_predictions.append(this_prediction)
@@ -67,17 +65,17 @@ def find_best_move(model, board, turn):
     assert len(move_predictions) == len(legal_moves)
 
     # Return the best move based on who's turn it is 
-    if turn == 'white':
+    if turn == 'W':
         return legal_moves[np.argmax(move_predictions)]
 
-    if turn == 'black':
+    if turn == 'B':
         return legal_moves[np.argmin(move_predictions)]
 
 def play_game(board, model1, model2, print_board):
     """
     This will be the main thing that plays games!
     """
-    turn = 'white'
+    turn = 'W'
 
     # Keep track of move list
     move_list = []
@@ -89,9 +87,15 @@ def play_game(board, model1, model2, print_board):
             board.print_board()
             print('\n------\n')
         
-        model_to_move = model1 if turn == 'white' else model2
-        best_move_prediction = find_best_move(model_to_move, board, turn)
+        model_to_move = model1 if turn == 'W' else model2
+        USE_MINIMAX = False
+        if USE_MINIMAX:
+            best_move_prediction = find_best_move_minimax(model_to_move, board, turn)
+        else:
+            best_move_prediction = find_best_move(model_to_move, board, turn)
+
         if best_move_prediction == -1:
+            print('best move prediction failed :(')
             break
         move_list.append(str(best_move_prediction))
 
@@ -100,13 +104,13 @@ def play_game(board, model1, model2, print_board):
         print(f"{turn}'s made the move - {str(best_move_prediction)}")
 
         # Update turn
-        turn = 'white' if turn == 'black' else 'black'
+        turn = 'W' if turn == 'B' else 'B'
 
     if board.game_is_done()[1] == 'draw':
         print('Draw.')
         return None, move_list
 
-    winning_color = 'white' if turn == 'black' else 'black'
+    winning_color = 'W' if turn == 'B' else 'B'
     print(f'{winning_color.upper()} has won the game.')
 
     return winning_color, move_list
@@ -121,8 +125,8 @@ def main(model1_path, model2_path, print_board):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('model1', type=str, help='Path to the model that will play as White.', default=None)
-    parser.add_argument('model2', type=str, help='Path to the model that will play as Black.', default=None)
+    parser.add_argument('model1', type=str, help='Path to the model that will play as W.', default=None)
+    parser.add_argument('model2', type=str, help='Path to the model that will play as B.', default=None)
     parser.add_argument('--print_board', type=bool, default=True)
 
     args = parser.parse_args()

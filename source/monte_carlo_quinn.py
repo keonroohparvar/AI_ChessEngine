@@ -2,8 +2,8 @@
 This script will be the Monte Carlo implementation that will be the way our Chess Engine is able
 to go down potential moves and choose the best one.
 
-Author: Keon Roohparvar
-Date: 11/3/2022
+Author: Quinn Potter
+Date: 5/9/2023
 """
 
 # Imports
@@ -81,7 +81,8 @@ def mc_eval_board(turn, board, current_depth, max_depth):
     # Get current evaluation
     model_path = '../models/quinn/saved_models/model0.h5'
     model = tf.keras.models.load_model(model_path)
-    curr_eval = model.predict(np.array([board]), verbose=0)[0][0]
+    board_encoding = board.positional_encode()
+    curr_eval = model.predict(np.array([board_encoding]), verbose=0)[0][0]
     
     
 
@@ -112,8 +113,14 @@ def monte_carlo(board, max_depth):
     turn = 'W'
 
     # GO thru all the boards
-    possible_boards = list(board.get_legal_moves())
-
+    possible_moves = list(board.get_legal_moves())
+    possible_boards = []
+    start_fen = board.get_fen()
+    for move in possible_moves:
+        board.make_move(str(move))
+        possible_boards.append(board)
+        board.set_fen(start_fen)
+        
     # GO through possibilities and do MCTS
     values = []
     for board in possible_boards:
@@ -128,6 +135,7 @@ def monte_carlo(board, max_depth):
 
 if __name__ == '__main__':
     board = ChessBoard()
-    model_path = '../models/quinn/saved_models/model0.h5'
-    example_use_of_model(model_path, board)
+    model_path = '../models/keon/saved_models/model_example.h5'
+    #example_use_of_model(model_path, board)
+    monte_carlo(board, 1)
     

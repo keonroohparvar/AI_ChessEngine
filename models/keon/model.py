@@ -21,7 +21,7 @@ class ChessAIModel:
     def __init__(self, learning_rate=1e-3):
         self.learning_rate = learning_rate
     
-    def get_model(self, model_type='just_board'):
+    def get_model(self, model_type='complex'):
         """
         This will return a Tensorflow Neural Network Object that can be used to train, and its
         architecture will be defined by the model_type parameter.
@@ -41,7 +41,6 @@ class ChessAIModel:
             return self.get_conv_model()
         
         if model_type == 'complex':
-            print('oooooo')
             return self.get_complex_model()
         
         if model_type == 'just_board':
@@ -153,22 +152,28 @@ class ChessAIModel:
         board_tensor_2d = Reshape(np.array([8, 8, 12]))(board_tensor)
 
         # Convolude on board data
-        x = Conv2D(32, 3, padding='same', activation='relu')(board_tensor_2d)
-        x = Conv2D(64, 3, padding='same', activation='relu')(x)
+        x = Conv2D(32, 5, padding='same', activation='relu')(board_tensor_2d)
+        x = Conv2D(64, 5, padding='same', activation='relu')(x)
+        x = Conv2D(128, 5, padding='same', activation='relu')(x)
         x = Flatten()(x)
 
         print(x.shape)
 
+        # Have some dense layers on the non-board data
+        non_board_neurons = Dense(64, activation='relu')(non_board_tensor)
+        non_board_neurons = Dense(128, activation='relu')(non_board_neurons)
+        non_board_neurons = Dense(256, activation='relu')(non_board_neurons)
+
         # add the output of convolutions and our non_board_tensor information together
-        board_and_non_board = Concatenate()([x, non_board_tensor])
+        board_and_non_board = Concatenate()([x, non_board_neurons])
 
         # Normal Deep Network onwards
         x = Dense(512, activation='relu')(board_and_non_board)
         x = Dense(256, activation='relu')(x)
-        x = Dense(128, activation='tanh')(x)
-        x = Dense(64, activation='tanh')(x)
-        x = Dense(32, activation='tanh')(x)
-        outputs = Dense(1, activation='linear')(x)
+        x = Dense(128, activation='relu')(x)
+        x = Dense(64, activation='relu')(x)
+        x = Dense(32, activation='relu')(x)
+        outputs = Dense(1, activation='tanh')(x)
 
         model = tf.keras.Model(inputs=inputs, outputs=outputs)
 

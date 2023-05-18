@@ -18,6 +18,7 @@ import numpy as np
 # Local Imports
 from board import ChessBoard
 from minimax import find_best_move_minimax
+from alpha_beta import find_best_move_ab_pruning
 
 def find_best_move(model, board, turn):
     """
@@ -88,10 +89,16 @@ def play_game(board, model1, model2, print_board):
             print('\n------\n')
         
         model_to_move = model1 if turn == 'W' else model2
-        USE_MINIMAX = False
-        if USE_MINIMAX:
+
+        ALGORITHMS = ['none', 'minimax', 'ab_pruning']
+        CHOSEN_ALGORITHM_INDEX = 2
+        CHOSEN_ALGORITHM = ALGORITHMS[CHOSEN_ALGORITHM_INDEX]
+
+        if CHOSEN_ALGORITHM == 'ab_pruning':
+            best_move_prediction = find_best_move_ab_pruning(model_to_move, board, turn)
+        elif CHOSEN_ALGORITHM == 'minimax':
             best_move_prediction = find_best_move_minimax(model_to_move, board, turn)
-        else:
+        elif CHOSEN_ALGORITHM == 'none': 
             best_move_prediction = find_best_move(model_to_move, board, turn)
 
         if best_move_prediction == -1:

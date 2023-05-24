@@ -44,6 +44,8 @@ class ChessBoard:
         
         print("\n".join(board_strs))
 
+    def get_turn(self):
+        return self.board.turn
 
     
     def make_move(self, move):

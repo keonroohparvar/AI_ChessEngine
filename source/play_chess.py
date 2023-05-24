@@ -131,6 +131,13 @@ def main(model1_path, model2_path, print_board):
     play_game(board, model1, model2, print_board)
 
 if __name__ == '__main__':
+    model1 = '../models/keon/saved_models/model_example.h5'
+    model2 = '../models/keon/saved_models/model_example.h5'
+    main(model1, model2, True)
+
+
+"""
+if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('model1', type=str, help='Path to the model that will play as W.', default=None)
     parser.add_argument('model2', type=str, help='Path to the model that will play as B.', default=None)
@@ -153,3 +160,4 @@ if __name__ == '__main__':
         exit(-1)
 
     main(args.model1, args.model2, args.print_board)
+"""

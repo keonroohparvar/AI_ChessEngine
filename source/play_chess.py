@@ -17,8 +17,8 @@ import numpy as np
 
 # Local Imports
 from board import ChessBoard
-from minimax import find_best_move_minimax
-from alpha_beta import find_best_move_ab_pruning
+from eval.minimax import find_best_move_minimax
+from eval.alpha_beta import find_best_move_ab_pruning
 
 def find_best_move(model, board, turn):
     """

@@ -45,7 +45,10 @@ class ChessBoard:
         print("\n".join(board_strs))
 
     def get_turn(self):
-        return self.board.turn
+        if self.board.turn:
+            return 'W'
+        else:
+            return 'B'
 
     
     def make_move(self, move):
@@ -76,6 +79,13 @@ class ChessBoard:
             return True, 'stalemate'
         return False, None
 
+    def get_validity(self):
+        valid = self.board.is_valid()
+        if not valid:
+            print(f'ERROR - Board is not valid: {self.board.status()}')
+            return False
+
+        return valid
 
     
     def positional_encode(self):

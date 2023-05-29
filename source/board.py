@@ -67,12 +67,13 @@ class ChessBoard:
     
     def game_is_done(self):
         if self.is_in_checkmate():
-            print("GAME IS DONE")
             return True, 'checkmate'
         if self.board.can_claim_draw():
             return True, 'draw'
         if self.board.is_fifty_moves():
             return True, 'fifty'
+        if not any(self.get_legal_moves()):
+            return True, 'stalemate'
         return False, None
 
 

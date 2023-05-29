@@ -21,18 +21,32 @@ from eval.count_material import eval_material
 
 
 def alphaBetaMax(board, alpha, beta, depth, max_depth):
-    print(f'in max, depth is {depth} and board is ->')
-    board.print_board()
-    print(f'fen is {board.get_fen()}')
-    print(f'ev is : {eval_material(board)}')
+    # BELOW IS PRINTS FOR DEBBUGING
+    # print(f'in max, depth is {depth} and board is ->')
+    # board.print_board()
+    # print(f'fen is {board.get_fen()}')
+    # print(f'ev is : {eval_material(board)}')
+
+    # Handles game-ending situations
+    game_is_done, reason = board.game_is_done()
+    if game_is_done:
+        if reason == 'checkmate':
+            # If it's checkmate and white's turn, then Black won -> -infinity
+            if board.get_turn():
+                return -1 * np.inf, depth
+            # If it's checkmate and black's turn, then White won -> +infinity
+            else:
+                return +1 * np.inf, depth
+        # Draw
+        else: 
+            return 0, depth
+
     # If Depth is max depth, we are at the end and we'll return the evaluation of this board
     if depth == max_depth:
         # this_evaluation = model.predict(np.array([board.positional_encode()]), verbose=0)[0][0]
         this_evaluation = eval_material(board)
-        return this_evaluation
+        return this_evaluation, depth
 
-    
-    print(f'IN MAX, LOOKING FOR Max MOVES.....')
     # Get Possible moves
     starter_board_fen = board.get_fen()
     legal_moves = list(board.get_legal_moves())
@@ -44,29 +58,44 @@ def alphaBetaMax(board, alpha, beta, depth, max_depth):
         possible_boards.append(new_board)
     
     # Iterate over moves while updating alpha; also, we watch for a beta break
+    depth_reached = depth
     for board in possible_boards:
-        this_board_score = alphaBetaMin(board, alpha, beta, depth+1, max_depth)
+        this_board_score, this_depth_reached = alphaBetaMin(board, alpha, beta, depth+1, max_depth)
         if this_board_score >= beta:
-            print(f'beta cutoff of {beta} as this board score is {this_board_score}')
-            return beta
+            return beta, this_depth_reached
         if this_board_score > alpha:
             alpha = this_board_score
-    print(f'Exiting max with alpha of {alpha}') 
-    return alpha
+            depth_reached = this_depth_reached
+
+    return alpha, depth_reached
 
 
 def alphaBetaMin(board, alpha, beta, depth, max_depth):
-    print(f'in min, depth is {depth} and board is ->')
-    board.print_board()
-    print(f'fen is {board.get_fen()}')
-    print(f'ev is : {eval_material(board)}')
+    # BELOW IS PRINTS FOR DEBUGGING
+    # print(f'in min, depth is {depth} and board is ->')
+    # board.print_board()
+    # print(f'fen is {board.get_fen()}')
+    # print(f'ev is : {eval_material(board)}')
+
+    # Handles game-ending situations
+    game_is_done, reason = board.game_is_done()
+    if game_is_done:
+        if reason == 'checkmate':
+            # If it's checkmate and white's turn, then Black won -> -infinity
+            if board.get_turn():
+                return -1 * np.inf, depth
+            # If it's checkmate and black's turn, then White won -> +infinity
+            else:
+                return +1 * np.inf, depth
+        # Draw
+        else: 
+            return 0, depth
+
     # If Depth is max depth, we are at the end and we'll return the evaluation of this board
     if depth == max_depth:
-        # this_evaluation = model.predict(np.array([board.positional_encode()]), verbose=0)[0][0]
         this_evaluation = eval_material(board)
-        return this_evaluation
+        return this_evaluation, depth
 
-    print('In min looking for Min Boards....')
 
     # Get Possible moves
     starter_board_fen = board.get_fen()
@@ -79,25 +108,41 @@ def alphaBetaMin(board, alpha, beta, depth, max_depth):
         possible_boards.append(new_board)
     
     # Iterate over moves while updating beta; also, we watch for an alpha break
+    depth_reached = depth
     for board in possible_boards:
-        this_board_score = alphaBetaMax(board, alpha, beta, depth+1, max_depth)
+        this_board_score, this_depth_reached = alphaBetaMax(board, alpha, beta, depth+1, max_depth)
         if this_board_score <= alpha:
-            # print('cutoff!')
-            print(f'ALpha cutoff of {alpha} with board score of {this_board_score}')
-            return alpha
+            return alpha, this_depth_reached
         if this_board_score < beta:
             beta = this_board_score
+            depth_reached = this_depth_reached
     
-    print(f'returning from min with beta of {beta}')
-    return beta
+    # print(f'returning from min with beta of {beta}')
+    return beta, depth_reached
 
 def ab_pruning(turn, board, max_depth):
-    print(f'\n----ROOT-----\nTurn is {turn}, board is ->')
-    board.print_board()
-    print(f'fen is {board.get_fen()}')
-    ev = eval_material(board)
-    print(f'ev is : {ev}')
-    print('\n--\n')
+    # BELOW IS PRINTS FOR DEBUGGING
+    # print(f'\n----ROOT-----\nTurn is {turn}, board is ->')
+    # board.print_board()
+    # print(f'fen is {board.get_fen()}')
+    # ev = eval_material(board)
+    # print(f'ev is : {ev}')
+    # print('\n--\n')
+
+    # Handles Draws/Stalemates
+    game_is_done, reason = board.game_is_done()
+    if game_is_done:
+        if reason == 'checkmate':
+            # If it's checkmate and white's turn, then Black won -> -infinity
+            if board.get_turn():
+                return None, -1 * np.inf, 1
+            # If it's checkmate and black's turn, then White won -> +infinity
+            else:
+                return None, +1 * np.inf, 1
+        # Draw
+        else: 
+            return None, 0, 1
+
     # Get all possible boards from this point
     original_fen = board.get_fen()
     legal_moves = list(board.get_legal_moves())
@@ -111,48 +156,28 @@ def ab_pruning(turn, board, max_depth):
     # Go through possibilities and do alpha beta pruning
     values = []
     times = []
+    depths_reached = []
     for board in possible_boards:
         starttime = time.time()
         if turn == 'W':
-            this_value = alphaBetaMin(board, alpha=-1*np.inf, beta=np.inf, depth=1, max_depth=max_depth)
+            this_value, this_depth_reached = alphaBetaMin(board, alpha=-1*np.inf, beta=np.inf, depth=1, max_depth=max_depth)
         elif turn == 'B':
-            this_value = alphaBetaMax(board, alpha=-1*np.inf, beta=np.inf, depth=1, max_depth=max_depth)
+            this_value, this_depth_reached = alphaBetaMax(board, alpha=-1*np.inf, beta=np.inf, depth=1, max_depth=max_depth)
 
         endtime = time.time()
         times.append(endtime - starttime)
 
         # print(f'this val: {this_value}')
         values.append(this_value)
+        depths_reached.append(this_depth_reached)
     
-    print('--RETURNED TO ROOT--')
-    print(f'Vals: {values}')
-
-
     # Choose the board that yields the highest value
     if turn == 'W':
         best_move = legal_moves[np.argmax(values)]
-        print(f'Best move: {best_move}\n----\n')
-        return best_move, np.max(values)
+        # print(f'Best move: {best_move}\n----\n')
+        return best_move, np.max(values), depths_reached[np.argmax(values)]
     else:
         best_move = legal_moves[np.argmin(values)]
-        print(f'Best move: {best_move}\n----\n')
-        return best_move, np.min(values)
-    
-    
-def find_best_move_ab_pruning(board, turn):
-    """
-    This function finds the best move predicted by a model by looking at all of the 
-    possible moves and chooisng the one that the model predicts yields the best position.
-
-    Args:
-        board: A PyChess board
-        turn: Either 'W' or 'B'
-    """
-    legal_moves = list(board.get_legal_moves())
-
-    if len(legal_moves) == 0:
-        return -1
-
-    best_move = ab_pruning(turn, board, max_depth=4)
-
-    return best_move
+        # print(f'Best move: {best_move}\n----\n')
+        return best_move, np.min(values), depths_reached[np.argmin(values)]
+        

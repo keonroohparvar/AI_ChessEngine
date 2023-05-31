@@ -12,6 +12,9 @@ found in requirements.txt and can be insalled wiht the command `pip install -r r
 
 IMPORTANT: CALL THIS FILE BY DOING THE FOLLOWING:
 
+`
+python find_move.py "INSERT YOUR FEN STRING HERE IN QUOTES"
+`
 """
 
 # Python Imports

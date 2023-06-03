@@ -11,7 +11,22 @@ This repository contains all of the implementation for the SPD Chess AI model.
 ## Folder Structure
 
 The folder structure is... 
-TODO
+
+```
+.
+├── data                  # Sample data examples of games
+├── legacy                # Old code that we don't use anymore
+├── models                # Different people's implementations of Neural Networks
+└── source
+    ├── board.py          # Our implementation of a board
+    ├── data_handler.py   # This handles all the interactions with the data
+    ├── eval/             # Folder that contains code for evaluating boards (AB pruning, minimax, etc.)
+    ├── find_move.py      # High level script that takes a board FEN and finds a move
+    ├── play_chess.py     # This has two hard-coded models play against eachother and prints board
+    ├── train_model.py    # This trains models on the data
+    └── ui                # folder that contains some work on implementing GUI
+```
+
 
 ## Setup
 
@@ -29,5 +44,10 @@ That's it! To check this all works, type `python` into the terminal and type `im
 
 ## How it Works
 
-TODO
+We ultimately employ Alpha-Beta pruning in tandem with Neural networks to evaluate a position.
 
+We use AB pruning to navegate the search tree and immediately eliminate any moves that result in us losing material at a depth of 4 moves into the future.
+
+We then handle ties by having a neural netowkr that was trained on Stockfish evaluations predict over the boards that are tied in us gaining the most material, and the best prediction from the neural network is ultimately the move that we choose.
+
+Currently, the model takes anywhere from 5 seconds to 180 seconds to make a move, so we need to make a lot of work in trying to decrease the time required for moves.

@@ -1,8 +1,8 @@
 # SPD_Chessbot
 
-This repository contains all of the implementation for the SPD Chess AI model. This is a Chess Engine that I (Keon Roohparvar) led the implementation on for Sigma Phi Delta, the engineering fraternity at Cal Poly SLO. 
+This repository contains all of the implementation for the SPD Chess AI model. This is a project that I (Keon Roohparvar) led for Sigma Phi Delta, the Professional Engineering Fraternity at Cal Poly SLO; I used the medium of a Chess Engine to teach undergraduates about some basic Deep Learning / Neural Network fundamentals.
 
-The majority of team members were new to programming, so this project was a learning opportunity to give new programmers a change to start interfacing with a fun, difficult project!
+The majority of team members were new to programming, so this project was a learning opportunity to give these guys a chance to start interacting with a fun, non-triveal project!
 
 
 ## Table of Contents

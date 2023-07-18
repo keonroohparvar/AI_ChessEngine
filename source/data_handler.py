@@ -15,7 +15,6 @@ import pandas as pd
 # Local Imports
 from board import ChessBoard
 
-# Keon
 def pull_only_stockfish_games(in_filepath, out_filepath):
     """
     This will parse the downloaded file and get the game strings from it.
@@ -26,7 +25,6 @@ def pull_only_stockfish_games(in_filepath, out_filepath):
                 if line[0] == '1' and ('eval' in line):
                     fw.write(line)
 
-# Keon
 def pull_all_games(filepath):
     """
     This function will pull all games from our database of games and return them as an array of strings.
@@ -55,12 +53,6 @@ def parse_game_string_to_list(game_string):
     moves = [i for i in moves if '#' not in i]
     moves = [i.replace('?', '').replace('!', '') for i in moves]
 
-    # print(moves)
-    # print(evals)
-
-    # print(len(moves))
-    # print(len(evals))
-
     # They remove evaluations if the move list is longer than 100 moves
     if len(moves) != len(evals):
         # print("ERROR - Moves != evals with game: \n-> ", game_string)
@@ -72,7 +64,6 @@ def parse_game_string_to_list(game_string):
 
     return list(zip(moves, evals))
 
-# Keon
 def convert_game_to_pos_encodings(move_list):
     """
     This function will be used to convert our move lists to data we can actually use. It will do 
@@ -109,7 +100,6 @@ def convert_game_to_pos_encodings(move_list):
     # print(BoardArrayValues)
     return BoardArrayValues
 
-# Keon
 def save_move_list_to_csv(move_list, data_filepath):
     """
     This will save the list 'move_list' as a lot of new data points in the csv file located
@@ -183,13 +173,9 @@ def game_to_data(game_str):
     """
     # Turn string into move + eval
     this_move_list = parse_game_string_to_list(game_str)
-    # print('move list: ')
-    # print(this_move_list)
 
     # Turn move list into positional encoding list
     this_positional_encoding_eval_list = convert_game_to_pos_encodings(this_move_list)
-    # print('pos encoding list length: ')
-    # print(len(this_positional_encoding_eval_list))
 
     # Go over games and do preprocessing
     LEN_OF_DATA = 777
@@ -217,35 +203,6 @@ def game_to_data(game_str):
 
         
 
-    
-
-
-
-
-
 if __name__ == '__main__':
-    # # Get All Games
-    # games = pull_all_games('../data/eval_games.txt')
-
-    # # print(f"Here is an example game: \n{games[0]}")
-
-    # for game in games:
-    #     # Turn string into move + eval
-    #     this_move_list = parse_game_string_to_list(game)
-    #     # print('move list: ')
-    #     # print(this_move_list)
-    
-    #     if this_move_list != []:
-
-    #         # Turn move list into positional encoding list
-    #         this_positional_encoding_eval_list = convert_game_to_pos_encodings(this_move_list)
-    #         print(len(this_positional_encoding_eval_list[0][0]))
-    #         exit()
-    #         # print('pos encoding list length: ')
-    #         # print(len(this_positional_encoding_eval_list))
-            
-
-    #         save_move_list_to_csv(move_list=this_move_list, data_filepath='../data/games.csv')
-    #         exit()
-
     data_pipeline('../data/eval_games.txt', 100)
+    

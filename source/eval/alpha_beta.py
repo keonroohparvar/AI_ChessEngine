@@ -21,6 +21,10 @@ from eval.count_material import eval_material
 
 
 def alphaBetaMax(board, alpha, beta, depth, max_depth):
+    """
+    Helper function for AB-Pruning. 
+    """
+    
     # BELOW IS PRINTS FOR DEBBUGING
     # print(f'in max, depth is {depth} and board is ->')
     # board.print_board()
@@ -71,6 +75,10 @@ def alphaBetaMax(board, alpha, beta, depth, max_depth):
 
 
 def alphaBetaMin(board, alpha, beta, depth, max_depth):
+    """
+    Helper function for AB-Pruning. 
+    """
+
     # BELOW IS PRINTS FOR DEBUGGING
     # print(f'in min, depth is {depth} and board is ->')
     # board.print_board()
@@ -121,6 +129,17 @@ def alphaBetaMin(board, alpha, beta, depth, max_depth):
     return beta, depth_reached
 
 def ab_pruning(turn, board, max_depth):
+    """
+    The main implementation for AB-Pruning. This will utilize the AB-Pruning algorithm to look
+    through the move tree to find the best move for White or Black, pruning branches that result
+    in too high of a loss of material.
+
+    Arguments:
+        turn (str): Either 'W' or 'B', for White or Black, respectively
+        board (ChessBoard) : Our ChessBoard object
+        max_depth (int): The maximum depth our algorithm should iterate too
+    """
+
     # BELOW IS PRINTS FOR DEBUGGING
     # print(f'\n----ROOT-----\nTurn is {turn}, board is ->')
     # board.print_board()

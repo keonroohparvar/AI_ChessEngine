@@ -18,6 +18,16 @@ from board import ChessBoard
 from eval.alpha_beta import ab_pruning
 
 def evaluate_board(board: ChessBoard, model: tf.keras.Model, turn: str, print_boards: bool = False):
+    """
+    The high-level function that is able to take in a board and find the best move for White or Black. 
+
+    Arguments:
+        board (ChessBoard): Our board object
+        model (tf.keras.Model): The model object who is responsible for this turn
+        turn (str): Either 'W' or 'B' for white or black, respectively 
+        print_board (bool): A tool for debugging, it prints the intermediate boards and their guessed evals
+    """
+    
     # Time logging for eval board
     start_time = time.time()
 

@@ -1,5 +1,5 @@
 """
-This is NOT our implementation of a chess board, but rather using the Python API 'Chess'.
+Our custom class that implements a board while building off of Python's Chess library.
 """
 
 import chess

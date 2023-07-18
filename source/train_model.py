@@ -82,8 +82,16 @@ def load_dataset(filepath):
 
     return train_x, test_x, train_y, test_y
 
-def import_model(path_to_model_file):
-    module = importlib.import_module(path_to_model_file, package='source')
+def import_model(name):
+    """
+    Dynamic function to import a custom class based off of the name of who implemented it.
+    For example, passing in 'keon' will dynamically load Keon's model, while passing in 'corey'
+    will dynamically load corey's instead. 
+
+    Arguments: 
+        name (str): The name of the person who implemented a model in the models/ dir
+    """
+    module = importlib.import_module(name, package='source')
     model_class = getattr(module, 'ChessAIModel')
     return model_class
 
@@ -145,10 +153,6 @@ def train_model(training_csv, user):
     with open(training_csv, 'r') as f:
         total_number_of_games = sum(1 for _ in f)
 
-
-    # # Load in data
-    # train_x, test_x, train_y, test_y = load_dataset(training_csv)
-
     # Retrieve model
     root.info('Retrieving model...')
     model = get_model(user)
@@ -202,19 +206,6 @@ def train_model(training_csv, user):
                         verbose=0
                     )
 
-
-                # # COMMENT BELOW FOR TESTING
-                # print(f'this game x: {this_game_x}')
-                # print(f'this game y: {this_game_y}')
-                # hist = model.fit(
-                #     x=this_game_x, 
-                #     y=this_game_y,
-                #     epochs=50,
-                #     batch_size=8,
-                #     verbose=0,
-                # )
-                # exit()
-                # # END TESTING
 
             except:
                 root.error(f'Error with the following data')

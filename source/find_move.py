@@ -10,8 +10,6 @@ notation for that pawn move.
 Just make sure your python environment has the appropriate packages installed (should be 
 found in requirements.txt and can be insalled wiht the command `pip install -r requirements.txt`).
 
-IMPORTANT: CALL THIS FILE BY DOING THE FOLLOWING:
-
 """
 
 # Python Imports

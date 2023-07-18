@@ -1,7 +1,7 @@
 """
-This script will be the one that plays chess by using Monte Carlo + our trained Neural Network. 
-This simply connects as a wrapper between our board script, our model, and our Monte Carlo 
-implementation.
+This script will automate a game of chess by using our custom AB-Pruning / Neural Network approach. 
+The functionality in this script simply serves as a wrapper between our board script, our model, 
+and our AB-Pruning implementation.
 
 Author: Keon Roohparvar
 Date: 11/3/2022
@@ -22,7 +22,14 @@ from eval.eval_board import evaluate_board
 
 def play_game(board, model1, model2, print_board):
     """
-    This will be the main thing that plays games!
+    The main driver function that simulates games and prints them to Standard Output.
+
+    Arguments:
+        board (ChessBoard): a ChessBoard object that will hold our game
+        model1 (tf.keras.Model): A Model instance that will play as White
+        model2 (tf.keras.Model): A Model instance that will play as Black
+        print_board (bool): If we want to print the board to Standard Output
+
     """
     turn = 'W'
 
@@ -73,26 +80,9 @@ def main(model1_path, model2_path, starting_fen=None, print_board=False):
     play_game(board, model1, model2, print_board)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('model1', type=str, help='Path to the model that will play as W.', default=None)
-    parser.add_argument('model2', type=str, help='Path to the model that will play as B.', default=None)
-    parser.add_argument('--print_board', type=bool, default=True)
-
-    args = parser.parse_args()
-
     # For hard coding model paths for testing
-    HARD_CODE_MODELS = False
-    if HARD_CODE_MODELS:
-        args.model1 = '../models/keon/saved_models/model_example.h5'
-        args.model2 = '../models/keon/saved_models/model_example.h5'
+    model1 = '../models/keon/saved_models/model_example.h5'
+    model2 = '../models/keon/saved_models/model_example.h5'
 
-    if not args.model1 or (not os.path.isfile(args.model1)):
-        print('ERROR - Did not provide a correct location to the the first model.')
-        exit(-1)
-
-    if not args.model2 or (not os.path.isfile(args.model2)):
-        print('ERROR - Did not provide a correct location to the the second model.')
-        exit(-1)
-
-    main(args.model1, args.model2, args.print_board)
+    main(model1, model2,None, True)
     

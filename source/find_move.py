@@ -62,10 +62,6 @@ def main():
     return best_move
 
 
-
-
-
-
 if __name__ == '__main__':
     main()
 
